@@ -1,77 +1,40 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { FiList, FiPlusCircle, FiShoppingBag } from "react-icons/fi";
+
+const links = [
+  { to: "/add", label: "Add items", Icon: FiPlusCircle },
+  { to: "/list", label: "List items", Icon: FiList },
+  { to: "/orders", label: "Orders", Icon: FiShoppingBag },
+];
 
 const Sidebar = () => {
   return (
-    <div className="w-[18%] min-h-screen border-r-2">
-      <div className="flex flex-col gap-4 pt-6 pl-[20%] text-[15px]">
-        <NavLink
-          to="/add"
-          className={({ isActive }) =>
-            `flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2 rounded-l ${
-              isActive ? "bg-pink-100" : ""
-            }`
-          }
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={1.5}
-          >
-            <circle cx="12" cy="12" r="10" />
-            <path d="M12 8v8M8 12h8" />
-          </svg>
-          <p className="hidden md:block">Add Items</p>
-        </NavLink>
+    <aside className="w-16 shrink-0 border-r border-ink-200 bg-white md:w-56">
+      <nav className="sticky top-0 flex flex-col gap-1.5 p-3 md:p-4">
+        <p className="hidden px-3 pb-2 pt-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-400 md:block">
+          Manage
+        </p>
 
-        <NavLink
-          to="/list"
-          className={({ isActive }) =>
-            `flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2 rounded-l ${
-              isActive ? "bg-pink-100" : ""
-            }`
-          }
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={1.5}
+        {links.map(({ to, label, Icon }) => (
+          <NavLink
+            key={to}
+            to={to}
+            title={label}
+            className={({ isActive }) =>
+              `flex items-center justify-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors md:justify-start ${
+                isActive
+                  ? "bg-ink-900 text-white"
+                  : "text-ink-600 hover:bg-ink-100 hover:text-ink-900"
+              }`
+            }
           >
-            <rect x="3" y="3" width="18" height="18" rx="2" />
-            <path d="M8 10l2 2 4-4" />
-          </svg>
-          <p className="hidden md:block">List Items</p>
-        </NavLink>
-
-        <NavLink
-          to="/orders"
-          className={({ isActive }) =>
-            `flex items-center gap-3 border border-gray-300 border-r-0 px-3 py-2 rounded-l ${
-              isActive ? "bg-pink-100" : ""
-            }`
-          }
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-5 h-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={1.5}
-          >
-            <rect x="3" y="3" width="18" height="18" rx="2" />
-            <path d="M8 10l2 2 4-4" />
-          </svg>
-          <p className="hidden md:block">Orders</p>
-        </NavLink>
-      </div>
-    </div>
+            <Icon className="shrink-0 text-lg" />
+            <span className="hidden md:block">{label}</span>
+          </NavLink>
+        ))}
+      </nav>
+    </aside>
   );
 };
 

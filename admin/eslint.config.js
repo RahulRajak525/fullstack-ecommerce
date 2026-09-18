@@ -23,7 +23,16 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // This config has no eslint-plugin-react, so identifiers used only
+      // inside JSX look unused. Capitalised names (components, icons) are
+      // ignored for that reason, in params as well as declarations.
+      'no-unused-vars': [
+        'error',
+        {
+          varsIgnorePattern: '^[A-Z_]',
+          argsIgnorePattern: '^[A-Z_]|^_',
+        },
+      ],
     },
   },
 ])

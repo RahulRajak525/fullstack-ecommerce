@@ -1,1 +1,170 @@
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Prata&display=swap");
 @import "tailwindcss";
+
+/* ---------------------------------------------------------------
+   Design tokens, kept in step with the storefront (frontend/src/
+   index.css) so both apps read as one product.
+----------------------------------------------------------------*/
+@theme {
+  /* Warm neutral ramp used for text, borders and surfaces */
+  --color-ink-50: #f8f8f7;
+  --color-ink-100: #f1f0ee;
+  --color-ink-200: #e5e3e0;
+  --color-ink-300: #d2cfcb;
+  --color-ink-400: #a5a19b;
+  --color-ink-500: #7a756e;
+  --color-ink-600: #57534e;
+  --color-ink-700: #3d3a36;
+  --color-ink-800: #26241f;
+  --color-ink-900: #16151a;
+  --color-ink-950: #0b0b0d;
+
+  /* Single accent: destructive actions, badges, focus highlights */
+  --color-accent-50: #fff3f0;
+  --color-accent-100: #ffe2db;
+  --color-accent-300: #ffab95;
+  --color-accent-500: #ff5436;
+  --color-accent-600: #ed3a1a;
+  --color-accent-700: #c32c11;
+
+  /* Status colours, used only by order/payment badges */
+  --color-success-50: #ecfdf5;
+  --color-success-500: #10b981;
+  --color-success-700: #047857;
+
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Prata", ui-serif, Georgia, serif;
+
+  --shadow-soft: 0 1px 2px rgb(16 15 20 / 0.04), 0 8px 24px rgb(16 15 20 / 0.06);
+  --shadow-lift: 0 2px 4px rgb(16 15 20 / 0.05), 0 18px 40px rgb(16 15 20 / 0.12);
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-fade-up: fade-up 0.4s var(--ease-out-soft) both;
+  --animate-fade-in: fade-in 0.2s var(--ease-out-soft) both;
+  --animate-pop-in: pop-in 0.25s var(--ease-out-soft) both;
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96) translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+/* ---------------------------------------------------------------
+   Base
+----------------------------------------------------------------*/
+@layer base {
+  * {
+    font-family: var(--font-sans);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-ink-50);
+    color: var(--color-ink-900);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-ink-900);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ink-900);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-ink-100);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-ink-300);
+    border-radius: 999px;
+    border: 2px solid var(--color-ink-100);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-ink-400);
+  }
+}
+
+/* ---------------------------------------------------------------
+   Utilities
+----------------------------------------------------------------*/
+@utility prata-regular {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-style: normal;
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Moving sheen used by every loading placeholder */
+@utility skeleton {
+  background-image: linear-gradient(
+    90deg,
+    var(--color-ink-200) 25%,
+    var(--color-ink-100) 37%,
+    var(--color-ink-200) 63%
+  );
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+}
+
+/* Respect the OS "reduce motion" setting */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
