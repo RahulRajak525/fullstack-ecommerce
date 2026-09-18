@@ -13,7 +13,15 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Local env overrides (the committed .env files are used by the deploys)
+# Secrets. NOTE: backend/.env is still TRACKED from the first commit, so these
+# patterns do not hide it - they only stop new env files being added. To finish
+# the job, confirm the host (Render) has every variable in its own dashboard,
+# then: git rm --cached backend/.env frontend/.env admin/.env
+# Rotating the credentials matters more than untracking: git history keeps every
+# past version of the file, so the old values stay readable either way.
+.env
+.env.*
+!.env.example
 *.local
 
 # Editor / OS
