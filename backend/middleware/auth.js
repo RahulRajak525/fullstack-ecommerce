@@ -1,19 +1,20 @@
 import jwt from "jsonwebtoken";
+import { ApiError } from "./errorHandler.js";
+
 const authUser = async (req, res, next) => {
-  const { token } = req.headers;
+  const token = req.headers.token || req.headers.authorization?.split(" ")[1];
 
   if (!token) {
-    return res.json({ success: false, message: "Not Authorized, Login again" });
+    throw new ApiError(401, "Not Authorized, Login again");
   }
 
-  try {
-    const token_decode = jwt.verify(token, process.env.JWT_SECRET);
-    req.body.userId = token_decode.id;
-    next();
-  } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
-  }
+  // jwt.verify throws on invalid/expired tokens; errorHandler maps those to 401
+  const token_decode = jwt.verify(token, process.env.JWT_SECRET);
+
+  // Attach to the request, not req.body - the client controls req.body and
+  // a GET request has no body at all.
+  req.userId = token_decode.id;
+  next();
 };
 
 export default authUser;

@@ -1,27 +1,21 @@
 import jwt from "jsonwebtoken";
+import { ApiError } from "./errorHandler.js";
 
 const adminAuth = async (req, res, next) => {
-  try {
-    const { token } = req.headers;
-    if (!token) {
-      return res.json({
-        success: false,
-        message: "Not Authorized Login Again",
-      });
-    }
-    const token_decode = jwt.verify(token, process.env.JWT_SECRET);
-    if (token_decode !== process.env.ADMIN_EMAIL + process.env.ADMIN_PASSWORD) {
-      return res.json({
-        success: false,
-        message: "Not Authorized Login Again",
-      });
-    }
+  const token = req.headers.token || req.headers.authorization?.split(" ")[1];
 
-    next();
-  } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+  if (!token) {
+    throw new ApiError(401, "Not Authorized Login Again");
   }
+
+  const token_decode = jwt.verify(token, process.env.JWT_SECRET);
+
+  if (token_decode.role !== "admin") {
+    throw new ApiError(403, "Not Authorized Login Again");
+  }
+
+  req.admin = token_decode;
+  next();
 };
 
 export default adminAuth;

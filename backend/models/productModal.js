@@ -12,6 +12,11 @@ const productSchema = new mongoose.Schema({
   date: { type: Number, required: true },
 });
 
+// Collection filters and the default newest-first ordering
+productSchema.index({ category: 1, subCategory: 1 });
+productSchema.index({ bestseller: 1 });
+productSchema.index({ date: -1 });
+
 const productModel =
   mongoose.models.product || mongoose.model("product", productSchema);
 

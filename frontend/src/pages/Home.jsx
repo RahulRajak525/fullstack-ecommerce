@@ -7,7 +7,7 @@ import NewsLetterBox from "../components/NewsLetterBox";
 
 function Home() {
   return (
-    <div>
+    <div className="pt-4 sm:pt-6">
       <Hero />
       <LatestCollection />
       <BestSeller />

@@ -1,24 +1,74 @@
-import React, { useContext, useState } from "react";
-import Title from "../components/Title";
-import { ShopContext } from "../context/ShopContext";
-import { assets } from "../assets/assets";
+import React, { useContext, useMemo, useState } from "react";
+import { motion } from "motion/react";
+import { FiCheck, FiLock, FiTruck } from "react-icons/fi";
 import axios from "axios";
 import { toast } from "react-toastify";
+import Title from "../components/Title";
+import Spinner from "../components/ui/Spinner";
+import EmptyState from "../components/ui/EmptyState";
+import { ShopContext } from "../context/ShopContext";
+import { assets } from "../assets/assets";
+
+/** Labelled input used across the delivery form. */
+function Input({ label, ...props }) {
+  return (
+    <label className="block">
+      <span className="mb-1.5 block text-xs font-medium text-ink-500">
+        {label}
+      </span>
+      <input
+        {...props}
+        className="w-full rounded-xl border border-ink-200 bg-white px-4 py-3 text-sm outline-none transition-colors focus:border-ink-900"
+      />
+    </label>
+  );
+}
+
+/** Selectable payment tile with an animated radio dot. */
+function PaymentOption({ active, onClick, children }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex flex-1 items-center gap-3 rounded-xl border px-4 py-3.5 text-left transition-all ${
+        active
+          ? "border-ink-900 bg-ink-50 ring-1 ring-ink-900"
+          : "border-ink-200 bg-white hover:border-ink-400"
+      }`}
+    >
+      <span
+        className={`flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full border transition-colors ${
+          active ? "border-ink-900 bg-ink-900" : "border-ink-300"
+        }`}
+      >
+        {active && (
+          <motion.span
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="h-1.5 w-1.5 rounded-full bg-white"
+          />
+        )}
+      </span>
+      {children}
+    </button>
+  );
+}
 
 function PlaceOrder() {
   const [method, setMethod] = useState("cod");
+  const [submitting, setSubmitting] = useState(false);
   const {
     navigate,
     backendUrl,
     token,
     cartItems,
     setCartItems,
-    getCartItems,
     delivery_fee,
     products,
     currency,
     getCartAmount,
   } = useContext(ShopContext);
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -30,260 +80,305 @@ function PlaceOrder() {
     country: "",
     phone: "",
   });
+
   const onChangeHandler = (event) => {
-    const name = event.target.name;
-    const value = event.target.value;
+    const { name, value } = event.target;
     setFormData((data) => ({ ...data, [name]: value }));
   };
 
+  const subtotal = getCartAmount();
+  const total = subtotal === 0 ? 0 : subtotal + delivery_fee;
+
+  const itemCount = useMemo(() => {
+    let n = 0;
+    for (const id in cartItems)
+      for (const size in cartItems[id]) n += cartItems[id][size];
+    return n;
+  }, [cartItems]);
+
   const formSubmitHandler = async (event) => {
     event.preventDefault();
-    try {
-      let orderItems = [];
+    if (submitting) return;
 
-      for (const items in cartItems) {
-        for (const item in cartItems[items]) {
-          if (cartItems[items][item] > 0) {
-            const itemInfo = structuredClone(
-              products.find((product) => product._id === items),
-            );
-            if (itemInfo) {
-              itemInfo.size = item;
-              itemInfo.quantity = cartItems[items][item];
-              orderItems.push(itemInfo);
-            }
+    const orderItems = [];
+    for (const productId in cartItems) {
+      for (const size in cartItems[productId]) {
+        if (cartItems[productId][size] > 0) {
+          const product = products.find((p) => p._id === productId);
+          if (product) {
+            const itemInfo = structuredClone(product);
+            itemInfo.size = size;
+            itemInfo.quantity = cartItems[productId][size];
+            orderItems.push(itemInfo);
           }
         }
       }
+    }
 
-      let orderData = {
+    if (orderItems.length === 0) {
+      toast.error("Your cart is empty");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const orderData = {
         address: formData,
         items: orderItems,
-        amount: getCartAmount() + delivery_fee,
+        amount: total,
       };
-      switch (method) {
-        // api calls for cod
-        case "cod":
-          const response = await axios.post(
-            backendUrl + "/api/order/place",
-            orderData,
-            {
-              headers: { token },
-            },
-          );
-          if (response.data.success) {
-            setCartItems({});
-            navigate("/orders");
-          } else {
-            toast.error(response.data.message);
-          }
 
-          break;
-        case "stripe":
-          const responseStripe = await axios.post(
-            backendUrl + "/api/order/stripe",
-            orderData,
-            { headers: { token } },
-          );
-          if (responseStripe.data.success) {
-            const { session_url } = responseStripe.data;
-            window.location.replace(session_url);
-          } else {
-            toast.error(responseStripe.data.message);
-          }
-          break;
-        default:
-          break;
+      if (method === "cod") {
+        const response = await axios.post(
+          backendUrl + "/api/order/place",
+          orderData,
+          { headers: { token } },
+        );
+        if (response.data.success) {
+          setCartItems({});
+          toast.success("Order placed");
+          navigate("/orders");
+        }
+      } else if (method === "stripe") {
+        const responseStripe = await axios.post(
+          backendUrl + "/api/order/stripe",
+          orderData,
+          { headers: { token } },
+        );
+        if (responseStripe.data.success) {
+          window.location.replace(responseStripe.data.session_url);
+          return; // leaving the page, keep the button spinning
+        }
+      } else {
+        // Razorpay is not wired up on the backend yet
+        toast.info("Razorpay is not available yet, please pick another method");
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(error.response?.data?.message || error.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  return (
-    <form
-      onSubmit={formSubmitHandler}
-      className="flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t"
-    >
-      {/* Left Side - Delivery Information */}
-      <div className="flex flex-col gap-4 w-full sm:max-w-[480px]">
-        <div className="text-xl sm:text-2xl my-3">
-          <Title text1={"DELIVERY "} text2={"INFORMATION"} />
-        </div>
-        <div className="flex gap-3">
-          <input
-            required
-            onChange={onChangeHandler}
-            name="firstName"
-            value={formData.firstName}
-            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-            type="text"
-            placeholder="First name"
-          />
-          <input
-            required
-            onChange={onChangeHandler}
-            name="lastName"
-            value={formData.lastName}
-            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-            type="text"
-            placeholder="Last name"
-          />
-        </div>
-        <input
-          required
-          onChange={onChangeHandler}
-          name="email"
-          value={formData.email}
-          className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-          type="email"
-          placeholder="Email address"
-        />
-        <input
-          required
-          onChange={onChangeHandler}
-          name="street"
-          value={formData.street}
-          className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-          type="text"
-          placeholder="Street"
-        />
-        <div className="flex gap-3">
-          <input
-            required
-            onChange={onChangeHandler}
-            name="city"
-            value={formData.city}
-            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-            type="text"
-            placeholder="City"
-          />
-          <input
-            required
-            onChange={onChangeHandler}
-            name="state"
-            value={formData.state}
-            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-            type="text"
-            placeholder="State"
-          />
-        </div>
-        <div className="flex gap-3">
-          <input
-            required
-            onChange={onChangeHandler}
-            name="zipcode"
-            value={formData.zipcode}
-            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-            type="number"
-            placeholder="Zipcode"
-          />
-          <input
-            required
-            onChange={onChangeHandler}
-            name="country"
-            value={formData.country}
-            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-            type="text"
-            placeholder="Country"
-          />
-        </div>
-        <input
-          required
-          onChange={onChangeHandler}
-          name="phone"
-          value={formData.phone}
-          className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-          type="number"
-          placeholder="Phone"
+  if (itemCount === 0) {
+    return (
+      <div className="py-16">
+        <EmptyState
+          icon={<FiTruck />}
+          title="Nothing to check out"
+          description="Add something to your bag before placing an order."
+          actionLabel="Browse collection"
+          actionTo="/collection"
         />
       </div>
+    );
+  }
 
-      {/* Right Side - Cart Totals & Payment */}
-      <div className="mt-8">
-        <div className="mt-8 min-w-80">
-          <div className="text-2xl">
-            <Title text1={"CART "} text2={"TOTALS"} />
+  return (
+    <form onSubmit={formSubmitHandler} className="py-10">
+      <div className="grid gap-10 lg:grid-cols-[1fr_400px]">
+        {/* Delivery details */}
+        <section>
+          <Title
+            text1={"Delivery "}
+            text2={"Information"}
+            subtitle="Where should we send your order?"
+          />
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            <Input
+              label="First name"
+              required
+              onChange={onChangeHandler}
+              name="firstName"
+              value={formData.firstName}
+              type="text"
+              autoComplete="given-name"
+              placeholder="Jane"
+            />
+            <Input
+              label="Last name"
+              required
+              onChange={onChangeHandler}
+              name="lastName"
+              value={formData.lastName}
+              type="text"
+              autoComplete="family-name"
+              placeholder="Doe"
+            />
+            <div className="sm:col-span-2">
+              <Input
+                label="Email address"
+                required
+                onChange={onChangeHandler}
+                name="email"
+                value={formData.email}
+                type="email"
+                autoComplete="email"
+                placeholder="jane@example.com"
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <Input
+                label="Street address"
+                required
+                onChange={onChangeHandler}
+                name="street"
+                value={formData.street}
+                type="text"
+                autoComplete="street-address"
+                placeholder="12 Market Street"
+              />
+            </div>
+            <Input
+              label="City"
+              required
+              onChange={onChangeHandler}
+              name="city"
+              value={formData.city}
+              type="text"
+              autoComplete="address-level2"
+              placeholder="Mumbai"
+            />
+            <Input
+              label="State"
+              required
+              onChange={onChangeHandler}
+              name="state"
+              value={formData.state}
+              type="text"
+              autoComplete="address-level1"
+              placeholder="Maharashtra"
+            />
+            <Input
+              label="Zip code"
+              required
+              onChange={onChangeHandler}
+              name="zipcode"
+              value={formData.zipcode}
+              type="text"
+              inputMode="numeric"
+              autoComplete="postal-code"
+              placeholder="400001"
+            />
+            <Input
+              label="Country"
+              required
+              onChange={onChangeHandler}
+              name="country"
+              value={formData.country}
+              type="text"
+              autoComplete="country-name"
+              placeholder="India"
+            />
+            <div className="sm:col-span-2">
+              <Input
+                label="Phone"
+                required
+                onChange={onChangeHandler}
+                name="phone"
+                value={formData.phone}
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                placeholder="+91 98765 43210"
+              />
+            </div>
           </div>
+        </section>
 
-          <div className="flex flex-col gap-2 mt-2 text-sm">
-            <div className="flex justify-between">
-              <p>Subtotal</p>
-              <p>
-                {currency} {getCartAmount()}.00
+        {/* Summary + payment */}
+        <aside className="lg:sticky lg:top-28 lg:self-start">
+          <div className="rounded-2xl border border-ink-200 bg-white p-6">
+            <h3 className="text-base font-medium text-ink-900">
+              Order summary
+            </h3>
+            <p className="mt-1 text-xs text-ink-500">
+              {itemCount} {itemCount === 1 ? "item" : "items"} in your bag
+            </p>
+
+            <dl className="mt-5 flex flex-col gap-3 text-sm">
+              <div className="flex justify-between text-ink-600">
+                <dt>Subtotal</dt>
+                <dd className="tabular-nums">
+                  {currency}
+                  {subtotal}.00
+                </dd>
+              </div>
+              <div className="flex justify-between text-ink-600">
+                <dt>Shipping</dt>
+                <dd className="tabular-nums">
+                  {currency}
+                  {delivery_fee}.00
+                </dd>
+              </div>
+              <div className="mt-2 flex justify-between border-t border-ink-200 pt-4 text-base font-semibold text-ink-950">
+                <dt>Total</dt>
+                <dd className="tabular-nums">
+                  {currency}
+                  {total}.00
+                </dd>
+              </div>
+            </dl>
+
+            <div className="mt-7">
+              <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-400">
+                Payment method
               </p>
+              <div className="flex flex-col gap-2.5">
+                <PaymentOption
+                  active={method === "cod"}
+                  onClick={() => setMethod("cod")}
+                >
+                  <span className="text-sm font-medium text-ink-800">
+                    Cash on delivery
+                  </span>
+                </PaymentOption>
+                <PaymentOption
+                  active={method === "stripe"}
+                  onClick={() => setMethod("stripe")}
+                >
+                  <img className="h-5" src={assets.stripe_logo} alt="Stripe" />
+                </PaymentOption>
+                <PaymentOption
+                  active={method === "razorpay"}
+                  onClick={() => setMethod("razorpay")}
+                >
+                  <img
+                    className="h-5"
+                    src={assets.razorpay_logo}
+                    alt="Razorpay"
+                  />
+                  <span className="ml-auto rounded-full bg-ink-100 px-2 py-0.5 text-[10px] text-ink-500">
+                    Soon
+                  </span>
+                </PaymentOption>
+              </div>
             </div>
-            <hr />
-            <div className="flex justify-between">
-              <p>Shipping Fee</p>
-              <p>
-                {currency} {delivery_fee}.00
-              </p>
-            </div>
-            <hr />
-            <div className="flex justify-between">
-              <b>Total</b>
-              <b>
-                {currency}{" "}
-                {getCartAmount() === 0 ? 0 : getCartAmount() + delivery_fee}.00
-              </b>
-            </div>
-          </div>
-        </div>
 
-        {/* Payment Method */}
-        <div className="mt-12">
-          <div className="text-xl">
-            <Title text1={"PAYMENT "} text2={"METHOD"} />
-          </div>
-          <div className="flex gap-3 flex-col lg:flex-row">
-            <div
-              onClick={() => setMethod("stripe")}
-              className="flex items-center gap-3 border p-2 px-3 cursor-pointer"
-            >
-              <p
-                className={`min-w-3.5 h-3.5 border rounded-full ${
-                  method === "stripe" ? "bg-green-400" : ""
-                }`}
-              ></p>
-              <img className="h-5 mx-4" src={assets.stripe_logo} alt="" />
-            </div>
-            <div
-              onClick={() => setMethod("razorpay")}
-              className="flex items-center gap-3 border p-2 px-3 cursor-pointer"
-            >
-              <p
-                className={`min-w-3.5 h-3.5 border rounded-full ${
-                  method === "razorpay" ? "bg-green-400" : ""
-                }`}
-              ></p>
-              <img className="h-5 mx-4" src={assets.razorpay_logo} alt="" />
-            </div>
-            <div
-              onClick={() => setMethod("cod")}
-              className="flex items-center gap-3 border p-2 px-3 cursor-pointer"
-            >
-              <p
-                className={`min-w-3.5 h-3.5 border rounded-full ${
-                  method === "cod" ? "bg-green-400" : ""
-                }`}
-              ></p>
-              <p className="text-gray-500 text-sm font-medium mx-4">
-                CASH ON DELIVERY
-              </p>
-            </div>
-          </div>
-
-          <div className="w-full text-end mt-8">
-            <button
+            <motion.button
+              whileTap={{ scale: 0.98 }}
               type="submit"
-              className="bg-black text-white px-16 py-3 text-sm"
+              disabled={submitting}
+              className="mt-7 flex w-full items-center justify-center gap-2 rounded-full bg-ink-900 py-4 text-sm font-semibold text-white transition-colors hover:bg-ink-700 disabled:opacity-70"
             >
-              PLACE ORDER
-            </button>
+              {submitting ? (
+                <>
+                  <Spinner className="h-4 w-4" light /> Placing order...
+                </>
+              ) : (
+                <>
+                  <FiCheck className="text-base" /> Place order
+                </>
+              )}
+            </motion.button>
+
+            <p className="mt-4 flex items-center justify-center gap-1.5 text-[11px] text-ink-400">
+              <FiLock /> Secure checkout
+            </p>
           </div>
-        </div>
+        </aside>
       </div>
     </form>
   );

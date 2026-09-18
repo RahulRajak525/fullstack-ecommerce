@@ -1,202 +1,280 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { FiFilter, FiSearch, FiSliders, FiX } from "react-icons/fi";
 import { ShopContext } from "../context/ShopContext";
-import { assets } from "../assets/assets";
 import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
+import { ProductGridSkeleton } from "../components/ui/Skeleton";
+import EmptyState from "../components/ui/EmptyState";
+import { staggerChild, staggerParent } from "../components/ui/motionVariants";
+
+const CATEGORIES = ["Men", "Women", "Kids"];
+const TYPES = ["Topwear", "Bottomwear", "Winterwear"];
+
+/** Checkbox row used by both filter groups. */
+function FilterRow({ label, checked, onChange }) {
+  return (
+    <label className="group flex cursor-pointer items-center gap-3 py-1.5 text-sm text-ink-600 transition-colors hover:text-ink-900">
+      <span
+        className={`flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-md border transition-all ${
+          checked
+            ? "border-ink-900 bg-ink-900"
+            : "border-ink-300 group-hover:border-ink-500"
+        }`}
+      >
+        {checked && (
+          <motion.svg
+            initial={{ scale: 0.4, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            viewBox="0 0 16 16"
+            className="h-3 w-3 text-white"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+          >
+            <path d="M3 8.5l3.2 3.2L13 5" strokeLinecap="round" />
+          </motion.svg>
+        )}
+      </span>
+      <input
+        type="checkbox"
+        value={label}
+        checked={checked}
+        onChange={onChange}
+        className="sr-only"
+      />
+      {label}
+    </label>
+  );
+}
 
 function Collection() {
-  const { products, search, showSearch } = useContext(ShopContext);
+  const { products, search, showSearch, loadingProducts, setShowSearch } =
+    useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
-  const [filterProducts, setFilterProducts] = useState([]);
   const [category, setCategory] = useState([]);
   const [subCategory, setSubCategory] = useState([]);
   const [sortType, setSortType] = useState("relevant");
 
-  const toggleCategory = (e) => {
-    if (category.includes(e.target.value)) {
-      setCategory((prev) => prev.filter((item) => item !== e.target.value));
-    } else {
-      setCategory((prev) => [...prev, e.target.value]);
-    }
+  const toggle = (setter) => (e) => {
+    const { value } = e.target;
+    setter((prev) =>
+      prev.includes(value) ? prev.filter((i) => i !== value) : [...prev, value],
+    );
   };
 
-  const toggleSubCategory = (e) => {
-    if (subCategory.includes(e.target.value)) {
-      setSubCategory((prev) => prev.filter((item) => item !== e.target.value));
-    } else {
-      setSubCategory((prev) => [...prev, e.target.value]);
-    }
-  };
-
-  const applyFilter = () => {
-    let productsCopy = products.slice();
+  // Filtering and sorting are pure derivations of state, so they belong in a
+  // memo rather than in effects writing back into state.
+  const filterProducts = useMemo(() => {
+    let list = products.slice();
 
     if (showSearch && search) {
-      productsCopy = productsCopy.filter((item) =>
-        item.name.toLowerCase().includes(search.toLowerCase()),
-      );
+      const q = search.toLowerCase();
+      list = list.filter((item) => item.name.toLowerCase().includes(q));
+    }
+    if (category.length) {
+      list = list.filter((item) => category.includes(item.category));
+    }
+    if (subCategory.length) {
+      list = list.filter((item) => subCategory.includes(item.subCategory));
     }
 
-    if (category.length > 0) {
-      productsCopy = productsCopy.filter((item) =>
-        category.includes(item.category),
-      );
-    }
+    if (sortType === "low-high") list.sort((a, b) => a.price - b.price);
+    else if (sortType === "high-low") list.sort((a, b) => b.price - a.price);
 
-    if (subCategory.length > 0) {
-      productsCopy = productsCopy.filter((item) =>
-        subCategory.includes(item.subCategory),
-      );
-    }
+    return list;
+  }, [products, search, showSearch, category, subCategory, sortType]);
 
-    setFilterProducts(productsCopy);
+  const activeCount = category.length + subCategory.length;
+
+  const clearAll = () => {
+    setCategory([]);
+    setSubCategory([]);
   };
 
-  const sortProduct = () => {
-    let fpCopy = filterProducts.slice();
+  const filterPanel = (
+    <div className="flex flex-col gap-6">
+      <div>
+        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-400">
+          Categories
+        </p>
+        {CATEGORIES.map((c) => (
+          <FilterRow
+            key={c}
+            label={c}
+            checked={category.includes(c)}
+            onChange={toggle(setCategory)}
+          />
+        ))}
+      </div>
 
-    switch (sortType) {
-      case "low-high":
-        setFilterProducts(fpCopy.sort((a, b) => a.price - b.price));
-        break;
-      case "high-low":
-        setFilterProducts(fpCopy.sort((a, b) => b.price - a.price));
-        break;
-      default:
-        applyFilter();
-        break;
-    }
-  };
+      <div className="border-t border-ink-200 pt-5">
+        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-400">
+          Type
+        </p>
+        {TYPES.map((t) => (
+          <FilterRow
+            key={t}
+            label={t}
+            checked={subCategory.includes(t)}
+            onChange={toggle(setSubCategory)}
+          />
+        ))}
+      </div>
 
-  useEffect(() => {
-    applyFilter();
-  }, [category, subCategory, search, showSearch, products]);
-
-  useEffect(() => {
-    sortProduct();
-  }, [sortType]);
+      {activeCount > 0 && (
+        <button
+          onClick={clearAll}
+          className="flex items-center justify-center gap-2 rounded-full border border-ink-200 py-2.5 text-xs font-medium text-ink-600 transition-colors hover:border-ink-900 hover:text-ink-900"
+        >
+          <FiX /> Clear filters ({activeCount})
+        </button>
+      )}
+    </div>
+  );
 
   return (
-    <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10">
-      {/* Filter Options */}
-      <div className="min-w-60">
-        <p
-          onClick={() => setShowFilter(!showFilter)}
-          className="my-2 text-xl flex items-center cursor-pointer gap-2"
-        >
-          FILTERS
-          <img
-            className={`h-3 sm:hidden ${showFilter ? "rotate-90" : ""}`}
-            src={assets.dropdown_icon}
-            alt=""
-          />
-        </p>
+    <div className="py-10">
+      <div className="flex flex-col gap-4 border-b border-ink-200 pb-8 sm:flex-row sm:items-end sm:justify-between">
+        <Title
+          text1={"All "}
+          text2={"Collections"}
+          subtitle="Browse the full range, filtered how you like it."
+        />
 
-        {/* Category Filter */}
-        <div
-          className={`border border-gray-300 pl-5 py-3 mt-6 ${
-            showFilter ? "" : "hidden"
-          } sm:block`}
-        >
-          <p className="mb-3 text-sm font-medium">CATEGORIES</p>
-          <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
-            <p className="flex gap-2">
-              <input
-                className="w-3"
-                type="checkbox"
-                value={"Men"}
-                onChange={toggleCategory}
-              />
-              Men
-            </p>
-            <p className="flex gap-2">
-              <input
-                className="w-3"
-                type="checkbox"
-                value={"Women"}
-                onChange={toggleCategory}
-              />
-              Women
-            </p>
-            <p className="flex gap-2">
-              <input
-                className="w-3"
-                type="checkbox"
-                value={"Kids"}
-                onChange={toggleCategory}
-              />
-              Kids
-            </p>
-          </div>
-        </div>
-
-        {/* SubCategory Filter */}
-        <div
-          className={`border border-gray-300 pl-5 py-3 my-5 ${
-            showFilter ? "" : "hidden"
-          } sm:block`}
-        >
-          <p className="mb-3 text-sm font-medium">TYPE</p>
-          <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
-            <p className="flex gap-2">
-              <input
-                className="w-3"
-                type="checkbox"
-                value={"Topwear"}
-                onChange={toggleSubCategory}
-              />
-              Topwear
-            </p>
-            <p className="flex gap-2">
-              <input
-                className="w-3"
-                type="checkbox"
-                value={"Bottomwear"}
-                onChange={toggleSubCategory}
-              />
-              Bottomwear
-            </p>
-            <p className="flex gap-2">
-              <input
-                className="w-3"
-                type="checkbox"
-                value={"Winterwear"}
-                onChange={toggleSubCategory}
-              />
-              Winterwear
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Right Side */}
-      <div className="flex-1">
-        <div className="flex justify-between text-base sm:text-2xl mb-4">
-          <Title text1={"ALL "} text2={"COLLECTIONS"} />
-          {/* Product Sort */}
-          <select
-            onChange={(e) => setSortType(e.target.value)}
-            className="border-2 border-gray-300 text-sm px-2"
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowFilter(true)}
+            className="relative flex items-center gap-2 rounded-full border border-ink-200 bg-white px-4 py-2.5 text-sm font-medium text-ink-700 lg:hidden"
           >
-            <option value="relevant">Sort by: Relevant</option>
-            <option value="low-high">Sort by: Low to High</option>
-            <option value="high-low">Sort by: High to Low</option>
-          </select>
-        </div>
+            <FiFilter className="text-base" />
+            Filters
+            {activeCount > 0 && (
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-ink-900 px-1 text-[10px] text-white">
+                {activeCount}
+              </span>
+            )}
+          </button>
 
-        {/* Map Products */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
-          {filterProducts.map((item, index) => (
-            <ProductItem
-              key={index}
-              name={item.name}
-              id={item._id}
-              price={item.price}
-              image={item.image}
-            />
-          ))}
+          <div className="relative">
+            <FiSliders className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-ink-400" />
+            <select
+              onChange={(e) => setSortType(e.target.value)}
+              value={sortType}
+              aria-label="Sort products"
+              className="appearance-none rounded-full border border-ink-200 bg-white py-2.5 pl-10 pr-9 text-sm text-ink-700 transition-colors hover:border-ink-400 focus:border-ink-900 focus:outline-none"
+            >
+              <option value="relevant">Relevance</option>
+              <option value="low-high">Price: low to high</option>
+              <option value="high-low">Price: high to low</option>
+            </select>
+          </div>
         </div>
       </div>
+
+      <div className="flex gap-10 pt-8">
+        {/* Desktop filters */}
+        <aside className="hidden w-56 shrink-0 lg:block">
+          <div className="sticky top-28 rounded-2xl border border-ink-200 bg-white p-5">
+            {filterPanel}
+          </div>
+        </aside>
+
+        {/* Grid */}
+        <section className="flex-1">
+          {!loadingProducts && (
+            <p className="mb-5 text-sm text-ink-500">
+              <span className="font-medium text-ink-900">
+                {filterProducts.length}
+              </span>{" "}
+              {filterProducts.length === 1 ? "product" : "products"}
+              {search && showSearch && (
+                <>
+                  {" "}
+                  for &ldquo;
+                  <span className="text-ink-900">{search}</span>&rdquo;
+                </>
+              )}
+            </p>
+          )}
+
+          {loadingProducts ? (
+            <ProductGridSkeleton
+              count={12}
+              className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-4"
+            />
+          ) : filterProducts.length === 0 ? (
+            <EmptyState
+              icon={<FiSearch />}
+              title="No products found"
+              description="Try removing a filter or searching for something else."
+              actionLabel={activeCount ? "Clear filters" : "Open search"}
+              onAction={activeCount ? clearAll : () => setShowSearch(true)}
+            />
+          ) : (
+            <motion.div
+              variants={staggerParent}
+              initial="hidden"
+              animate="show"
+              key={`${sortType}-${category.join()}-${subCategory.join()}-${search}`}
+              className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-4"
+            >
+              {filterProducts.map((item) => (
+                <motion.div key={item._id} variants={staggerChild}>
+                  <ProductItem
+                    name={item.name}
+                    id={item._id}
+                    price={item.price}
+                    image={item.image}
+                    bestseller={item.bestseller}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </section>
+      </div>
+
+      {/* Mobile filter sheet */}
+      <AnimatePresence>
+        {showFilter && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowFilter(false)}
+              className="fixed inset-0 z-80 bg-ink-950/40 backdrop-blur-sm lg:hidden"
+            />
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", stiffness: 320, damping: 34 }}
+              className="fixed inset-x-0 bottom-0 z-90 max-h-[80vh] overflow-y-auto rounded-t-3xl bg-white p-6 lg:hidden"
+            >
+              <div className="mx-auto mb-5 h-1 w-10 rounded-full bg-ink-200" />
+              <div className="mb-5 flex items-center justify-between">
+                <p className="text-base font-medium">Filters</p>
+                <button
+                  onClick={() => setShowFilter(false)}
+                  aria-label="Close filters"
+                  className="rounded-full p-2 text-ink-500 hover:bg-ink-100"
+                >
+                  <FiX />
+                </button>
+              </div>
+              {filterPanel}
+              <button
+                onClick={() => setShowFilter(false)}
+                className="mt-6 w-full rounded-full bg-ink-900 py-3.5 text-sm font-medium text-white"
+              >
+                Show {filterProducts.length} results
+              </button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
