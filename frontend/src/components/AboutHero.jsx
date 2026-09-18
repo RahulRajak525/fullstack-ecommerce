@@ -29,11 +29,19 @@ const AboutHero = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease }}
-            className="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-ink-50 px-3.5 py-1.5"
+            className="flex flex-wrap items-center gap-2"
           >
-            <FiMapPin className="text-ink-500" />
-            <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-600">
-              A studio of nine, in Washington
+            <span className="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-ink-50 px-3.5 py-1.5">
+              <FiMapPin className="text-ink-500" />
+              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-600">
+                A studio of nine, in Washington
+              </span>
+            </span>
+
+            {/* The page opens with a brand narrative that is sample content,
+                so it says so here rather than only in the footer. */}
+            <span className="inline-flex items-center gap-2 rounded-full border border-accent-300 bg-accent-50 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-accent-700">
+              Sample brand story
             </span>
           </motion.div>
 

@@ -3,10 +3,12 @@ import { motion } from "motion/react";
 import CountUp from "./ui/CountUp";
 import { staggerChild, staggerParent } from "./ui/motionVariants";
 
+// Sample figures for the demo storefront - no real trading data behind them,
+// so nothing here is framed as a published or verified number.
 const figures = [
   { value: 12, suffix: "", label: "Years in the trade", note: "Since 2014" },
-  { value: 96, suffix: "%", label: "Reorder rate", note: "Last 12 months" },
-  { value: 2.1, decimals: 1, suffix: "%", label: "Returns rate", note: "Industry average is 18%" },
+  { value: 96, suffix: "%", label: "Reorder rate", note: "Rolling 12 months" },
+  { value: 2.1, decimals: 1, suffix: "%", label: "Returns rate", note: "Of items shipped" },
   { value: 24, suffix: "h", label: "Dispatch window", note: "On stocked items" },
 ];
 
@@ -27,7 +29,7 @@ const StatBand = () => {
         variants={staggerChild}
         className="relative text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-white/45"
       >
-        The numbers we are happy to publish
+        Sample figures &mdash; demo storefront
       </motion.p>
 
       <div className="relative mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">

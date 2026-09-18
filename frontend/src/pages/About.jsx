@@ -96,8 +96,9 @@ function About() {
         </Reveal>
 
         <Reveal delay={0.12} className="flex flex-col gap-5">
-          {/* Pull quote, set large so it breaks the column of body copy */}
-          <figure className="relative overflow-hidden rounded-3xl bg-ink-900 p-8 sm:p-10">
+          {/* Statement of intent, set large so it breaks the column of body
+              copy. Deliberately unattributed - this is a demo brand. */}
+          <div className="relative overflow-hidden rounded-3xl bg-ink-900 p-8 sm:p-10">
             <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 animate-blob rounded-full bg-accent-500/25 blur-3xl" />
             <span
               aria-hidden="true"
@@ -105,14 +106,14 @@ function About() {
             >
               &rdquo;
             </span>
-            <blockquote className="prata-regular relative text-xl leading-snug text-white sm:text-2xl">
-              If a jacket comes back to us in ten years for a new zip, that is
-              the business working exactly as intended.
-            </blockquote>
-            <figcaption className="relative mt-6 border-t border-white/10 pt-5 text-[11px] uppercase tracking-[0.16em] text-white/50">
-              Priya Raman &mdash; founder
-            </figcaption>
-          </figure>
+            <p className="relative text-[11px] font-semibold uppercase tracking-[0.18em] text-white/45">
+              The standard
+            </p>
+            <p className="prata-regular relative mt-4 text-xl leading-snug text-white sm:text-2xl">
+              If a jacket comes back for a new zip in ten years, that is the
+              business working exactly as intended.
+            </p>
+          </div>
 
           <div className="rounded-3xl border border-ink-200 bg-white p-8 sm:p-10">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-400">
@@ -130,6 +131,7 @@ function About() {
       <StatBand />
 
       <Milestones />
+
 
       {/* Why choose us ---------------------------------------------------- */}
       <section className="pb-16 sm:pb-20">

@@ -80,9 +80,19 @@ const Footer = () => {
         </div>
       </div>
 
-      <div className="mt-14 flex flex-col items-center justify-between gap-3 border-t border-ink-200 py-7 sm:flex-row">
+      <div className="mt-14 rounded-2xl border border-ink-200 bg-ink-100/60 px-5 py-4">
+        <p className="text-xs leading-relaxed text-ink-500">
+          <span className="font-semibold text-ink-700">Portfolio demo.</span>{" "}
+          Forever is a full-stack project built to demonstrate the storefront,
+          admin panel and API. Products, prices, reviews, company details and
+          figures throughout the site are sample content, and no order placed
+          here is fulfilled.
+        </p>
+      </div>
+
+      <div className="mt-6 flex flex-col items-center justify-between gap-3 border-t border-ink-200 py-7 sm:flex-row">
         <p className="text-xs text-ink-400">
-          &copy; {new Date().getFullYear()} Forever. All rights reserved.
+          &copy; {new Date().getFullYear()} Forever &mdash; demo storefront.
         </p>
         <div className="flex gap-6 text-xs text-ink-400">
           <a href="#" className="transition-colors hover:text-ink-900">

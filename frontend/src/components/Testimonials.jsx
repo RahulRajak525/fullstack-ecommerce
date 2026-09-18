@@ -1,30 +1,27 @@
 import React from "react";
 import { motion } from "motion/react";
-import { FiStar } from "react-icons/fi";
+import { FiShoppingBag, FiStar } from "react-icons/fi";
 import Title from "./Title";
 import { staggerChild, staggerParent } from "./ui/motionVariants";
 
+// Sample reviews for the demo storefront. Deliberately not attributed to
+// named people - inventing a reviewer and presenting them as real is the one
+// thing this section must not do.
 const reviews = [
   {
     quote:
-      "The cotton is heavier than anything I've ordered online before. Two months of weekly washes and the neck still holds its shape.",
-    name: "Aarav Mehta",
-    role: "Bought the Pure Cotton Tee",
-    initials: "AM",
+      "The cotton is heavier than anything I have ordered online before. Two months of weekly washes and the neck still holds its shape.",
+    product: "Pure Cotton Tee",
   },
   {
     quote:
       "Ordered a size up out of habit, exchanged it in three days with zero fuss. The measurements on the page are actually accurate.",
-    name: "Sofia Almeida",
-    role: "Bought the Round Neck Top",
-    initials: "SA",
+    product: "Round Neck Top",
   },
   {
     quote:
-      "Packaging was flat, plastic-free and it arrived a day early. Small thing, but it's why I came back for the trousers.",
-    name: "Daniel Osei",
-    role: "Bought the Tapered Trousers",
-    initials: "DO",
+      "Packaging was flat, plastic-free and it arrived a day early. Small thing, but it is why I came back for the trousers.",
+    product: "Tapered Trousers",
   },
 ];
 
@@ -35,7 +32,7 @@ const Testimonials = () => {
         center
         text1={"What Customers "}
         text2={"Say"}
-        subtitle="Unedited notes from people who paid full price."
+        subtitle="Sample reviews, shown to demonstrate the layout."
       />
 
       <motion.div
@@ -45,9 +42,9 @@ const Testimonials = () => {
         viewport={{ once: true, amount: 0.2 }}
         className="mt-10 grid gap-5 md:grid-cols-3"
       >
-        {reviews.map(({ quote, name, role, initials }) => (
+        {reviews.map(({ quote, product }) => (
           <motion.figure
-            key={name}
+            key={product}
             variants={staggerChild}
             whileHover={{ y: -6 }}
             transition={{ type: "spring", stiffness: 300, damping: 24 }}
@@ -84,15 +81,15 @@ const Testimonials = () => {
             </blockquote>
 
             <figcaption className="relative mt-6 flex items-center gap-3 border-t border-ink-100 pt-5">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-ink-900 text-xs font-semibold text-white">
-                {initials}
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-ink-100 text-ink-700">
+                <FiShoppingBag className="text-base" />
               </span>
               <span>
                 <span className="block text-sm font-semibold text-ink-900">
-                  {name}
+                  {product}
                 </span>
                 <span className="block text-[11px] uppercase tracking-wider text-ink-400">
-                  {role}
+                  Sample review
                 </span>
               </span>
             </figcaption>

@@ -45,7 +45,7 @@ const Milestones = () => {
         center
         text1={"How We Got "}
         text2={"Here"}
-        subtitle="Twelve years, condensed into the five decisions that mattered."
+        subtitle="An illustrative brand story for this demo storefront."
       />
 
       <div ref={ref} className="relative mx-auto mt-12 max-w-2xl">
