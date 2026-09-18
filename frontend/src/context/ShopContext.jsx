@@ -21,6 +21,11 @@ const ShopContextProvider = (props) => {
   const [loadingProducts, setLoadingProducts] = useState(true);
   // Product id currently being added, so its button can show a spinner
   const [addingToCart, setAddingToCart] = useState(null);
+  // True while a stored session's cart is still being fetched. Seeded from
+  // localStorage so the first render already knows a cart is on its way.
+  const [loadingCart, setLoadingCart] = useState(() =>
+    Boolean(localStorage.getItem("token")),
+  );
 
   const addToCart = useCallback(
     async (itemId, size) => {
@@ -53,7 +58,7 @@ const ShopContextProvider = (props) => {
       }
     }
 
-      toast.success("Added to your bag");
+      // No success toast - the cart badge already confirms the add.
       setAddingToCart(null);
     },
     [cartItems, token, backendUrl],
@@ -146,6 +151,8 @@ const ShopContextProvider = (props) => {
     } catch (error) {
       console.log(error);
       toast.error(error.response?.data?.message || error.message);
+    } finally {
+      setLoadingCart(false);
     }
   };
 
@@ -185,6 +192,8 @@ const ShopContextProvider = (props) => {
     if (stored) {
       setToken(stored);
       getUserCart(stored);
+    } else {
+      setLoadingCart(false);
     }
   }, []);
 
@@ -208,6 +217,7 @@ const ShopContextProvider = (props) => {
       setToken,
       navigate,
       loadingProducts,
+      loadingCart,
       addingToCart,
       logout,
     }),
@@ -218,6 +228,7 @@ const ShopContextProvider = (props) => {
       cartItems,
       token,
       loadingProducts,
+      loadingCart,
       addingToCart,
       getCartCount,
       getCartAmount,

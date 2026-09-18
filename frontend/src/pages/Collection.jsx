@@ -1,8 +1,11 @@
 import React, { useContext, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { FiFilter, FiSearch, FiSliders, FiX } from "react-icons/fi";
 import { ShopContext } from "../context/ShopContext";
-import Title from "../components/Title";
+import CollectionBanner from "../components/CollectionBanner";
+import FilterPills from "../components/FilterPills";
+import Marquee from "../components/Marquee";
 import ProductItem from "../components/ProductItem";
 import { ProductGridSkeleton } from "../components/ui/Skeleton";
 import EmptyState from "../components/ui/EmptyState";
@@ -52,16 +55,22 @@ function Collection() {
   const { products, search, showSearch, loadingProducts, setShowSearch } =
     useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
-  const [category, setCategory] = useState([]);
+  // The home page links in as /collection?category=Women, so the matching box
+  // starts ticked. Read once - after that the checkboxes own the state.
+  const [searchParams] = useSearchParams();
+  const [category, setCategory] = useState(() => {
+    const requested = searchParams.get("category");
+    return CATEGORIES.includes(requested) ? [requested] : [];
+  });
   const [subCategory, setSubCategory] = useState([]);
   const [sortType, setSortType] = useState("relevant");
 
-  const toggle = (setter) => (e) => {
-    const { value } = e.target;
+  const toggleValue = (setter) => (value) =>
     setter((prev) =>
       prev.includes(value) ? prev.filter((i) => i !== value) : [...prev, value],
     );
-  };
+
+  const toggle = (setter) => (e) => toggleValue(setter)(e.target.value);
 
   // Filtering and sorting are pure derivations of state, so they belong in a
   // memo rather than in effects writing back into state.
@@ -133,14 +142,43 @@ function Collection() {
     </div>
   );
 
+  // Chips for whatever is currently on, so it can be removed in one tap.
+  const activeFilters = [
+    ...category.map((value) => ({ value, remove: toggleValue(setCategory) })),
+    ...subCategory.map((value) => ({
+      value,
+      remove: toggleValue(setSubCategory),
+    })),
+  ];
+
   return (
     <div className="py-10">
-      <div className="flex flex-col gap-4 border-b border-ink-200 pb-8 sm:flex-row sm:items-end sm:justify-between">
-        <Title
-          text1={"All "}
-          text2={"Collections"}
-          subtitle="Browse the full range, filtered how you like it."
-        />
+      <CollectionBanner total={products.length} loading={loadingProducts} />
+
+      <div className="mt-10 flex flex-col gap-4 border-b border-ink-200 pb-6 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-ink-500">
+          {loadingProducts ? (
+            "Fetching products..."
+          ) : (
+            <>
+              {/* Keyed so the number replays its pop whenever the count moves */}
+              <span
+                key={filterProducts.length}
+                className="inline-block animate-pop font-semibold text-ink-900"
+              >
+                {filterProducts.length}
+              </span>{" "}
+              {filterProducts.length === 1 ? "product" : "products"}
+              {search && showSearch && (
+                <>
+                  {" "}
+                  for &ldquo;
+                  <span className="text-ink-900">{search}</span>&rdquo;
+                </>
+              )}
+            </>
+          )}
+        </p>
 
         <div className="flex items-center gap-3">
           <button
@@ -172,6 +210,68 @@ function Collection() {
         </div>
       </div>
 
+      {/* Quick filters - the same state the checkbox panel drives */}
+      <div className="flex flex-col gap-3 pt-6 sm:flex-row sm:items-center sm:gap-8">
+        <FilterPills
+          label="Shop for"
+          options={CATEGORIES}
+          active={category}
+          onToggle={toggleValue(setCategory)}
+          onClear={() => setCategory([])}
+        />
+        <FilterPills
+          label="Type"
+          options={TYPES}
+          active={subCategory}
+          onToggle={toggleValue(setSubCategory)}
+          onClear={() => setSubCategory([])}
+        />
+      </div>
+
+      <AnimatePresence initial={false}>
+        {activeFilters.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="flex flex-wrap items-center gap-2 pt-5">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-400">
+                Active
+              </span>
+
+              <AnimatePresence mode="popLayout">
+                {activeFilters.map(({ value, remove }) => (
+                  <motion.button
+                    key={value}
+                    layout
+                    type="button"
+                    onClick={() => remove(value)}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.22 }}
+                    className="group flex items-center gap-2 rounded-full bg-ink-900 px-3.5 py-1.5 text-xs font-medium text-white"
+                  >
+                    {value}
+                    <FiX className="text-sm text-white/60 transition-colors group-hover:text-white" />
+                  </motion.button>
+                ))}
+              </AnimatePresence>
+
+              <button
+                onClick={clearAll}
+                className="ml-1 text-xs font-medium text-ink-500 transition-colors hover:text-ink-900"
+              >
+                <span className="link-underline">Clear all</span>
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="flex gap-10 pt-8">
         {/* Desktop filters */}
         <aside className="hidden w-56 shrink-0 lg:block">
@@ -182,22 +282,6 @@ function Collection() {
 
         {/* Grid */}
         <section className="flex-1">
-          {!loadingProducts && (
-            <p className="mb-5 text-sm text-ink-500">
-              <span className="font-medium text-ink-900">
-                {filterProducts.length}
-              </span>{" "}
-              {filterProducts.length === 1 ? "product" : "products"}
-              {search && showSearch && (
-                <>
-                  {" "}
-                  for &ldquo;
-                  <span className="text-ink-900">{search}</span>&rdquo;
-                </>
-              )}
-            </p>
-          )}
-
           {loadingProducts ? (
             <ProductGridSkeleton
               count={12}
@@ -233,6 +317,11 @@ function Collection() {
             </motion.div>
           )}
         </section>
+      </div>
+
+      {/* Closing reassurance strip, same ticker as the home page */}
+      <div className="mt-16">
+        <Marquee />
       </div>
 
       {/* Mobile filter sheet */}
