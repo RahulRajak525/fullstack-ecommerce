@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import Orders from "./pages/Orders";
 import PlaceOrder from "./pages/PlaceOrder";
 import Verify from "./pages/Verify";
+import NotFound from "./pages/NotFound";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import SearchBar from "./components/SearchBar";
@@ -41,6 +42,8 @@ const routes = [
   { path: "/place-order", element: <PlaceOrder /> },
   { path: "/verify", element: <Verify /> },
   { path: "/orders", element: <Orders /> },
+  // Must stay last: anything unmatched above lands here
+  { path: "*", element: <NotFound /> },
 ];
 
 const App = () => {
