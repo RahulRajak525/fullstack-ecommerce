@@ -5,6 +5,7 @@ import { FiArrowRight, FiMinus, FiPlus, FiShoppingBag, FiTrash2 } from "react-ic
 import { ShopContext } from "../context/ShopContext";
 import Title from "../components/Title";
 import EmptyState from "../components/ui/EmptyState";
+import { CartSkeleton } from "../components/ui/Skeleton";
 
 /** Compact -/+ stepper replacing the old free-text number input. */
 function QtyStepper({ value, onChange }) {
@@ -40,6 +41,8 @@ function Cart() {
     getCartAmount,
     delivery_fee,
     token,
+    loadingProducts,
+    loadingCart,
   } = useContext(ShopContext);
   const navigate = useNavigate();
 
@@ -59,6 +62,8 @@ function Cart() {
     return rows;
   }, [cartItems, products]);
 
+  const loading = loadingProducts || loadingCart;
+
   const subtotal = getCartAmount();
   const total = subtotal === 0 ? 0 : subtotal + delivery_fee;
 
@@ -74,7 +79,11 @@ function Cart() {
     <div className="py-10">
       <Title text1={"Your "} text2={"Cart"} />
 
-      {cartData.length === 0 ? (
+      {loading ? (
+        <div className="mt-10">
+          <CartSkeleton rows={3} />
+        </div>
+      ) : cartData.length === 0 ? (
         <div className="mt-10">
           <EmptyState
             icon={<FiShoppingBag />}
