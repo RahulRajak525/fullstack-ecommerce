@@ -10,8 +10,8 @@ const links = [
 
 const Sidebar = () => {
   return (
-    <aside className="w-16 shrink-0 border-r border-ink-200 bg-white md:w-56">
-      <nav className="sticky top-0 flex flex-col gap-1.5 p-3 md:p-4">
+    <aside className="w-16 shrink-0 self-stretch border-r border-ink-200 bg-white md:w-56">
+      <nav className="sticky top-[57px] flex flex-col gap-1.5 p-3 md:p-4">
         <p className="hidden px-3 pb-2 pt-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-400 md:block">
           Manage
         </p>

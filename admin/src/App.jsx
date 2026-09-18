@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Add from "./pages/Add";
@@ -43,15 +43,19 @@ const App = () => {
       ) : (
         <>
           <Navbar setToken={setToken} />
-          <div className="flex">
+          <div className="flex min-h-[calc(100vh-57px)]">
             <Sidebar />
             <main className="min-w-0 flex-1 px-4 py-8 sm:px-8">
               <div className="mx-auto max-w-5xl">
                 <Routes>
+                  {/* No page lives at "/" - send it to the catalogue */}
+                  <Route path="/" element={<Navigate to="/list" replace />} />
                   <Route path="/add" element={<Add token={token} />} />
                   <Route path="/list" element={<List token={token} />} />
                   <Route path="/edit/:id" element={<Edit token={token} />} />
                   <Route path="/orders" element={<Orders token={token} />} />
+                  {/* Anything unknown, likewise, rather than a blank panel */}
+                  <Route path="*" element={<Navigate to="/list" replace />} />
                 </Routes>
               </div>
             </main>
