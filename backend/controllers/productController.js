@@ -78,6 +78,119 @@ const addProduct = async (req, res) => {
   }
 };
 
+// function for updating a product
+//
+// Images are handled per slot: a newly uploaded image1..image4 replaces that
+// slot, and `keepImages` carries the URLs of the slots the admin left alone.
+// That way editing a price does not force a re-upload of every photo.
+
+const updateProduct = async (req, res) => {
+  const {
+    id,
+    name,
+    description,
+    price,
+    category,
+    subCategory,
+    sizes,
+    bestseller,
+    keepImages,
+  } = req.body;
+
+  if (!id) {
+    throw new ApiError(400, "Product id is required");
+  }
+
+  const existing = await productModel.findById(id);
+  if (!existing) {
+    throw new ApiError(404, "Product not found");
+  }
+
+  if (!name || !description || !category || !subCategory) {
+    throw new ApiError(
+      400,
+      "Name, description, category and subCategory are required",
+    );
+  }
+
+  const numericPrice = Number(price);
+  if (!Number.isFinite(numericPrice) || numericPrice < 0) {
+    throw new ApiError(400, "Price must be a positive number");
+  }
+
+  let parsedSizes;
+  try {
+    parsedSizes = JSON.parse(sizes);
+  } catch {
+    throw new ApiError(400, "Sizes must be a valid JSON array");
+  }
+  if (!Array.isArray(parsedSizes) || parsedSizes.length === 0) {
+    throw new ApiError(400, "At least one size is required");
+  }
+
+  // Slots the admin kept, as a 4-long array of URLs or nulls
+  let keptSlots;
+  try {
+    keptSlots = keepImages ? JSON.parse(keepImages) : [];
+  } catch {
+    throw new ApiError(400, "keepImages must be a valid JSON array");
+  }
+  if (!Array.isArray(keptSlots)) {
+    throw new ApiError(400, "keepImages must be a valid JSON array");
+  }
+
+  // Only URLs already on this product may be kept, so the field cannot be used
+  // to point a product at arbitrary remote images.
+  const ownUrls = new Set(existing.image);
+  keptSlots = keptSlots.map((url) =>
+    typeof url === "string" && ownUrls.has(url) ? url : null,
+  );
+
+  const slotFields = ["image1", "image2", "image3", "image4"];
+  const uploads = slotFields.map((field) => req.files?.[field]?.[0] ?? null);
+  const tempFiles = uploads.filter(Boolean);
+
+  try {
+    const imagesUrl = [];
+
+    for (let i = 0; i < slotFields.length; i++) {
+      if (uploads[i]) {
+        const result = await cloudinary.uploader.upload(uploads[i].path, {
+          resource_type: "image",
+          quality: "auto",
+          fetch_format: "auto",
+        });
+        imagesUrl.push(result.secure_url);
+      } else if (keptSlots[i]) {
+        imagesUrl.push(keptSlots[i]);
+      }
+    }
+
+    if (imagesUrl.length === 0) {
+      throw new ApiError(400, "At least one image is required");
+    }
+
+    // `date` is left as-is so editing does not jump the product to the top of
+    // the newest-first listing.
+    await productModel.findByIdAndUpdate(id, {
+      name,
+      description,
+      category,
+      subCategory,
+      price: numericPrice,
+      bestseller: bestseller === "true",
+      sizes: parsedSizes,
+      image: imagesUrl,
+    });
+
+    res.json({ success: true, message: "Product updated" });
+  } finally {
+    await Promise.all(
+      tempFiles.map((item) => fs.unlink(item.path).catch(() => {})),
+    );
+  }
+};
+
 // function for list product
 
 const listProducts = async (req, res) => {
@@ -130,4 +243,10 @@ const singleProduct = async (req, res) => {
   res.json({ success: true, product });
 };
 
-export { addProduct, listProducts, removeProduct, singleProduct };
+export {
+  addProduct,
+  updateProduct,
+  listProducts,
+  removeProduct,
+  singleProduct,
+};
