@@ -17,6 +17,7 @@ import Footer from "./components/Footer";
 import SearchBar from "./components/SearchBar";
 import ScrollToTop from "./components/ScrollToTop";
 import ColdStartNotice from "./components/ColdStartNotice";
+import ProjectNotice from "./components/ProjectNotice";
 import { ToastContainer } from "react-toastify";
 
 /** Wraps each route so navigating cross-fades instead of snapping. */
@@ -61,6 +62,7 @@ const App = () => {
       />
       <ScrollToTop />
       <ColdStartNotice />
+      <ProjectNotice />
       <Navbar />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6">

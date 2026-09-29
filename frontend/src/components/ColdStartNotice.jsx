@@ -31,18 +31,22 @@ function progressFor(seconds) {
   return 95 * (1 - Math.exp(-seconds / 11));
 }
 
+// sessionStorage rather than localStorage: the backend goes back to sleep
+// after a period of inactivity, so someone returning days later faces the same
+// wait and needs the same explanation. localStorage would have silenced the
+// notice permanently after the very first visit.
 function alreadySeen() {
   try {
-    return localStorage.getItem(STORAGE_KEY) === "1";
+    return sessionStorage.getItem(STORAGE_KEY) === "1";
   } catch {
-    // Private mode or blocked storage: treat as a first visit rather than fail
+    // Private mode or blocked storage: show it rather than fail
     return false;
   }
 }
 
 function markSeen() {
   try {
-    localStorage.setItem(STORAGE_KEY, "1");
+    sessionStorage.setItem(STORAGE_KEY, "1");
   } catch {
     // Not being able to remember is fine; the notice is not important enough
     // to warrant any fallback.
@@ -50,9 +54,12 @@ function markSeen() {
 }
 
 /**
- * Shown to a first-time visitor while the free-tier API wakes up. The first
- * request of the day can take ~30 seconds, and an unexplained wall of
- * skeletons reads as a broken site.
+ * Shown while the free-tier API wakes up. The first request after a period of
+ * inactivity can take ~30 seconds, and an unexplained wall of skeletons reads
+ * as a broken site.
+ *
+ * Appears at most once per browsing session, and only when the wait is real -
+ * a warm backend never triggers it.
  */
 const ColdStartNotice = () => {
   const { loadingProducts } = useContext(ShopContext);
