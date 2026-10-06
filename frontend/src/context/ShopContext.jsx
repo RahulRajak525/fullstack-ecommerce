@@ -5,6 +5,27 @@ import { useNavigate } from "react-router-dom";
 
 export const ShopContext = createContext();
 
+// Logged-out favourites live in the browser and move into the account on login
+const GUEST_WISHLIST_KEY = "kora:wishlist";
+
+function readGuestWishlist() {
+  try {
+    const ids = JSON.parse(localStorage.getItem(GUEST_WISHLIST_KEY));
+    return Array.isArray(ids) ? ids.filter((id) => typeof id === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeGuestWishlist(ids) {
+  try {
+    if (ids.length) localStorage.setItem(GUEST_WISHLIST_KEY, JSON.stringify(ids));
+    else localStorage.removeItem(GUEST_WISHLIST_KEY);
+  } catch {
+    // Storage blocked: favourites still work for this visit
+  }
+}
+
 const ShopContextProvider = (props) => {
   const currency = "$";
   const delivery_fee = 10;
@@ -26,12 +47,20 @@ const ShopContextProvider = (props) => {
   const [loadingCart, setLoadingCart] = useState(() =>
     Boolean(localStorage.getItem("token")),
   );
+  // Favourite product ids, oldest first. A stored session starts empty and
+  // fills from the account; a guest starts from the browser's copy.
+  const [wishlist, setWishlist] = useState(() =>
+    localStorage.getItem("token") ? [] : readGuestWishlist(),
+  );
+  const [loadingWishlist, setLoadingWishlist] = useState(() =>
+    Boolean(localStorage.getItem("token")),
+  );
 
   const addToCart = useCallback(
     async (itemId, size) => {
     if (!size) {
       toast.error("Please select a size first");
-      return;
+      return false;
     }
 
     setAddingToCart(itemId);
@@ -54,12 +83,13 @@ const ShopContextProvider = (props) => {
         setCartItems(cartItems); // roll back to the pre-click cart
         toast.error(error.response?.data?.message || error.message);
         setAddingToCart(null);
-        return;
+        return false;
       }
     }
 
       // No success toast - the cart badge already confirms the add.
       setAddingToCart(null);
+      return true;
     },
     [cartItems, token, backendUrl],
   );
@@ -123,6 +153,41 @@ const ShopContextProvider = (props) => {
     return totalAmount;
   }, [cartItems, products]);
 
+  const toggleWishlist = useCallback(
+    async (itemId) => {
+      const saved = wishlist.includes(itemId);
+      const next = saved
+        ? wishlist.filter((id) => id !== itemId)
+        : [...wishlist, itemId];
+      setWishlist(next);
+
+      if (!token) {
+        writeGuestWishlist(next);
+        return;
+      }
+
+      try {
+        await axios.post(
+          backendUrl + (saved ? "/api/wishlist/remove" : "/api/wishlist/add"),
+          { itemId },
+          { headers: { token } },
+        );
+      } catch (error) {
+        console.log(error);
+        // Undo just this item, leaving any other toggles made meanwhile
+        setWishlist((current) =>
+          saved
+            ? current.includes(itemId)
+              ? current
+              : [...current, itemId]
+            : current.filter((id) => id !== itemId),
+        );
+        toast.error(error.response?.data?.message || error.message);
+      }
+    },
+    [wishlist, token, backendUrl],
+  );
+
   const getProductsList = async () => {
     try {
       setLoadingProducts(true);
@@ -160,6 +225,7 @@ const ShopContextProvider = (props) => {
     localStorage.removeItem("token");
     setToken("");
     setCartItems({});
+    setWishlist([]);
     navigate("/login");
   }, [navigate]);
 
@@ -177,6 +243,7 @@ const ShopContextProvider = (props) => {
           localStorage.removeItem("token");
           setToken("");
           setCartItems({});
+          setWishlist([]);
           navigate("/login");
         }
         return Promise.reject(error);
@@ -196,6 +263,33 @@ const ShopContextProvider = (props) => {
       setLoadingCart(false);
     }
   }, []);
+
+  // Whenever a session starts (restored on load, or a fresh login), merge any
+  // favourites saved while logged out into the account and load the result.
+  useEffect(() => {
+    if (!token) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const response = await axios.post(
+          backendUrl + "/api/wishlist/sync",
+          { itemIds: readGuestWishlist().slice(-200) },
+          { headers: { token } },
+        );
+        if (!cancelled && response.data.success) {
+          setWishlist(response.data.wishlist);
+          writeGuestWishlist([]);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        if (!cancelled) setLoadingWishlist(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [token, backendUrl]);
 
   const value = useMemo(
     () => ({
@@ -220,6 +314,9 @@ const ShopContextProvider = (props) => {
       loadingCart,
       addingToCart,
       logout,
+      wishlist,
+      toggleWishlist,
+      loadingWishlist,
     }),
     [
       products,
@@ -237,6 +334,9 @@ const ShopContextProvider = (props) => {
       logout,
       backendUrl,
       navigate,
+      wishlist,
+      toggleWishlist,
+      loadingWishlist,
     ],
   );
 

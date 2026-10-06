@@ -13,6 +13,7 @@ import {
 import { ShopContext } from "../context/ShopContext";
 import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
+import WishlistButton from "../components/WishlistButton";
 import Spinner from "../components/ui/Spinner";
 import { Skeleton } from "../components/ui/Skeleton";
 import EmptyState from "../components/ui/EmptyState";
@@ -218,23 +219,30 @@ function ProductView({ productData }) {
             </div>
           </div>
 
-          {/* Add to cart */}
-          <motion.button
-            whileTap={{ scale: 0.98 }}
-            onClick={() => addToCart(productData._id, size)}
-            disabled={isAdding}
-            className="mt-8 flex w-full items-center justify-center gap-2.5 rounded-full bg-ink-900 px-8 py-4 text-sm font-semibold text-white transition-colors hover:bg-ink-700 disabled:opacity-70 sm:w-auto sm:min-w-65"
-          >
-            {isAdding ? (
-              <>
-                <Spinner className="h-4 w-4" light /> Adding...
-              </>
-            ) : (
-              <>
-                <FiShoppingBag className="text-base" /> Add to bag
-              </>
-            )}
-          </motion.button>
+          {/* Add to cart, and save for later */}
+          <div className="mt-8 flex gap-3">
+            <motion.button
+              whileTap={{ scale: 0.98 }}
+              onClick={() => addToCart(productData._id, size)}
+              disabled={isAdding}
+              className="flex flex-1 items-center justify-center gap-2.5 rounded-full bg-ink-900 px-8 py-4 text-sm font-semibold text-white transition-colors hover:bg-ink-700 disabled:opacity-70 sm:flex-none sm:min-w-65"
+            >
+              {isAdding ? (
+                <>
+                  <Spinner className="h-4 w-4" light /> Adding...
+                </>
+              ) : (
+                <>
+                  <FiShoppingBag className="text-base" /> Add to bag
+                </>
+              )}
+            </motion.button>
+            <WishlistButton
+              id={productData._id}
+              name={productData.name}
+              className="h-13 w-13 shrink-0 border border-ink-200 bg-white text-lg hover:border-ink-900"
+            />
+          </div>
 
           {/* Reassurance */}
           <div className="mt-8 grid gap-3 border-t border-ink-200 pt-6 text-sm text-ink-500 sm:grid-cols-3">

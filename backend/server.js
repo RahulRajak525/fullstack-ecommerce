@@ -7,6 +7,7 @@ import connectCloudinary from "./config/cloudinary.js";
 import userRouter from "./routes/userRoute.js";
 import productRouter from "./routes/productRoute.js";
 import cartRouter from "./routes/cartRoutes.js";
+import wishlistRouter from "./routes/wishlistRoutes.js";
 import orderRouter from "./routes/orderRoute.js";
 import { notFound, errorHandler } from "./middleware/errorHandler.js";
 
@@ -26,6 +27,7 @@ app.use(cors());
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
 app.use("/api/cart", cartRouter);
+app.use("/api/wishlist", wishlistRouter);
 app.use("/api/order", orderRouter);
 
 app.get("/", (req, res) => {

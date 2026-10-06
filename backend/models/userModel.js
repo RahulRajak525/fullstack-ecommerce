@@ -6,6 +6,8 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     cartData: { type: Object, default: {} },
+    // Product ids the user saved as favourites, oldest first
+    wishlist: { type: [String], default: [] },
   },
   { minimize: false },
 );
