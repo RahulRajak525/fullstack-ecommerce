@@ -25,10 +25,37 @@ export const BRAND = {
  * `light` marks dyes pale enough to need dark text on top.
  */
 export const DYES = {
-  kora: { name: "Kora", source: "Undyed cotton", hex: "#e8dfcf", light: true },
-  indigo: { name: "Indigo", source: "Indigofera tinctoria", hex: "#27355f" },
-  madder: { name: "Madder", source: "Rubia cordifolia", hex: "#a8432e" },
-  turmeric: { name: "Turmeric", source: "Curcuma longa", hex: "#d4a03c", light: true },
-  kattha: { name: "Kattha", source: "Acacia catechu", hex: "#6e4630" },
+  kora: {
+    name: "Kora",
+    source: "Undyed cotton",
+    hex: "#e8dfcf",
+    light: true,
+    note: "Raw cotton as it leaves the loom, before it meets a dye.",
+  },
+  indigo: {
+    name: "Indigo",
+    source: "Indigofera tinctoria",
+    hex: "#27355f",
+    note: "Fermented leaves. The cloth goes in up to twelve times, and each dip adds depth.",
+  },
+  madder: {
+    name: "Madder",
+    source: "Rubia cordifolia",
+    hex: "#a8432e",
+    note: "Ground root, simmered slowly. A warm red that mellows with every wash.",
+  },
+  turmeric: {
+    name: "Turmeric",
+    source: "Curcuma longa",
+    hex: "#d4a03c",
+    light: true,
+    note: "The kitchen spice, fixed with alum. Bright at first, softening to gold.",
+  },
+  kattha: {
+    name: "Kattha",
+    source: "Acacia catechu",
+    hex: "#6e4630",
+    note: "Bark boiled down to a dark extract. A rust-brown that only deepens.",
+  },
   anar: { name: "Pomegranate", source: "Punica granatum rind", hex: "#a69a5b", light: true },
 };

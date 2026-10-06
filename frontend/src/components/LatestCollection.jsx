@@ -12,7 +12,7 @@ const LatestCollection = () => {
   const latest = useMemo(() => products.slice(0, 10), [products]);
 
   return (
-    <section className="py-16 sm:py-20">
+    <section>
       <Title
         center
         text1={"Latest "}
