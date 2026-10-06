@@ -39,7 +39,7 @@ const StatBand = () => {
             variants={staggerChild}
             className="text-center sm:text-left"
           >
-            <p className="prata-regular text-3xl text-white sm:text-4xl">
+            <p className="type-display text-3xl text-white sm:text-4xl">
               <CountUp value={value} decimals={decimals} suffix={suffix} />
             </p>
             <p className="mt-2 text-sm font-medium text-white/80">{label}</p>

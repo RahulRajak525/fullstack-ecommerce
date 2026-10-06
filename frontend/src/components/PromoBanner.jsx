@@ -70,7 +70,7 @@ const PromoBanner = () => {
             <FiTag /> Midseason event
           </span>
 
-          <h2 className="prata-regular mt-5 text-3xl leading-tight text-white sm:text-4xl">
+          <h2 className="type-display mt-5 text-3xl leading-tight text-white sm:text-4xl">
             Up to 40% off the winter rail
           </h2>
           <p className="mt-3 max-w-md text-sm leading-relaxed text-white/60">

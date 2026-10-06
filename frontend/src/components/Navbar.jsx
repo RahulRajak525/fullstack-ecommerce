@@ -11,7 +11,8 @@ import {
 } from "react-icons/fi";
 import { Link, NavLink } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
-import { assets } from "../assets/assets";
+import Logo from "./ui/Logo";
+import { BRAND } from "../brand";
 import { ShopContext } from "../context/ShopContext";
 
 const links = [
@@ -95,15 +96,15 @@ export default function Navbar() {
       >
         <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
           {/* Logo */}
-          <Link to="/" className="shrink-0" aria-label="Forever home">
-            <motion.img
+          <Link to="/" className="shrink-0" aria-label={`${BRAND.name} home`}>
+            <motion.span
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              src={assets.logo}
-              className="w-28 sm:w-32"
-              alt="Forever"
-            />
+              className="block"
+            >
+              <Logo />
+            </motion.span>
           </Link>
 
           {/* Desktop links */}

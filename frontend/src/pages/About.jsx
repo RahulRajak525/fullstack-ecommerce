@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "motion/react";
-import { FiAward, FiHeadphones, FiPackage } from "react-icons/fi";
+import { FiDroplet, FiMessageCircle, FiTool } from "react-icons/fi";
 import Title from "../components/Title";
 import AboutHero from "../components/AboutHero";
 import StatBand from "../components/StatBand";
@@ -8,23 +8,24 @@ import Milestones from "../components/Milestones";
 import Faq from "../components/Faq";
 import NewsLetterBox from "../components/NewsLetterBox";
 import Reveal from "../components/ui/Reveal";
+import { BRAND } from "../brand";
 import { staggerChild, staggerParent } from "../components/ui/motionVariants";
 
 const reasons = [
   {
-    icon: FiAward,
-    title: "Quality assurance",
-    body: "Every piece is checked against the same standards before it reaches the rail. No shortcuts, no seconds, no clearing last season's mistakes onto you.",
+    icon: FiDroplet,
+    title: "Dyes you can name",
+    body: "Indigo, madder, turmeric, kattha. Every colour we sell comes from a plant, and the dye lot is written on the label. No synthetic top-ups to even out a batch.",
   },
   {
-    icon: FiPackage,
-    title: "Convenience",
-    body: "A checkout that stays out of your way, with clear pricing, flat measurements on every page and delivery you can actually plan around.",
+    icon: FiTool,
+    title: "Mended, not replaced",
+    body: "Split seam or a tired zip? Send it back and we repair it at cost, for as long as we are trading. A garment that comes back is a garment that was worth making.",
   },
   {
-    icon: FiHeadphones,
-    title: "Exceptional service",
-    body: "Real people answering real questions, from sizing advice to returns. One inbox, no ticket numbers, replies inside a working day.",
+    icon: FiMessageCircle,
+    title: "A person, not a ticket",
+    body: "Sizing questions, a late parcel, a return - one inbox read by the people who cut the clothes, with a reply inside a working day.",
   },
 ];
 
@@ -51,18 +52,19 @@ function About() {
               </span>
             </div>
 
-            <h2 className="prata-regular text-3xl leading-tight text-ink-950 sm:text-4xl">
+            <h2 className="type-display text-3xl leading-tight text-ink-950 sm:text-4xl">
               It began as a complaint
               <br />
               about t-shirts.
             </h2>
 
             <p>
-              Forever was born out of a passion for innovation and a desire to
-              change the way people shop online. It began with a simple idea: a
-              place where you can discover, explore and buy without the noise
-              &mdash; no countdown timers on evergreen stock, no fourteen upsells
-              between the cart and the card.
+              {BRAND.name} started with a plain white tee that went grey and
+              shapeless in a month. The fix turned out to be older than the
+              problem: heavier raw cotton, left unbleached, and coloured in
+              plant dyes that soften with washing instead of fading flat. We
+              sell it without the noise &mdash; no countdown timers on evergreen
+              stock, no fourteen upsells between the cart and the card.
             </p>
             <p>
               Since then we have worked to curate a selection that holds up
@@ -102,14 +104,14 @@ function About() {
             <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 animate-blob rounded-full bg-accent-500/25 blur-3xl" />
             <span
               aria-hidden="true"
-              className="prata-regular pointer-events-none absolute -top-4 right-6 text-8xl text-white/10 select-none"
+              className="type-display pointer-events-none absolute -top-4 right-6 text-8xl text-white/10 select-none"
             >
               &rdquo;
             </span>
             <p className="relative text-[11px] font-semibold uppercase tracking-[0.18em] text-white/45">
               The standard
             </p>
-            <p className="prata-regular relative mt-4 text-xl leading-snug text-white sm:text-2xl">
+            <p className="type-display relative mt-4 text-xl leading-snug text-white sm:text-2xl">
               If a jacket comes back for a new zip in ten years, that is the
               business working exactly as intended.
             </p>
@@ -120,9 +122,9 @@ function About() {
               Our mission
             </p>
             <p className="mt-3 text-sm leading-relaxed text-ink-700">
-              To give our customers choice, convenience and confidence &mdash; a
-              shopping experience that quietly exceeds expectations, from
-              browsing right through to delivery.
+              To make a small wardrobe of clothes that earn their place &mdash;
+              dyed by hand, cut in short runs, and sold with enough honesty
+              about fabric and fit that you only buy them once.
             </p>
           </div>
         </Reveal>
@@ -164,7 +166,7 @@ function About() {
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-ink-100 text-ink-800 transition-colors duration-300 group-hover:bg-ink-900 group-hover:text-white">
                   <Icon className="text-lg" />
                 </div>
-                <span className="prata-regular text-2xl tabular-nums text-ink-200 transition-colors duration-300 group-hover:text-ink-300">
+                <span className="type-display text-2xl tabular-nums text-ink-200 transition-colors duration-300 group-hover:text-ink-300">
                   0{i + 1}
                 </span>
               </div>

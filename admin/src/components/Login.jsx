@@ -4,6 +4,7 @@ import { FiLock, FiMail } from "react-icons/fi";
 import { backendUrl } from "../config";
 import { toast } from "react-toastify";
 import Spinner from "./ui/Spinner";
+import Logo from "./ui/Logo";
 
 const Login = ({ setToken }) => {
   // Deliberately empty. These fields used to be pre-filled with the live admin
@@ -39,10 +40,8 @@ const Login = ({ setToken }) => {
   return (
     <div className="flex min-h-screen w-full items-center justify-center px-4">
       <div className="animate-fade-up w-full max-w-sm rounded-3xl border border-ink-200 bg-white p-8 shadow-soft">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-400">
-          Forever
-        </p>
-        <h1 className="prata-regular mt-2 text-2xl text-ink-950">
+        <Logo />
+        <h1 className="type-display mt-6 text-2xl text-ink-950">
           Admin panel
         </h1>
         <p className="mt-2 text-sm leading-relaxed text-ink-500">

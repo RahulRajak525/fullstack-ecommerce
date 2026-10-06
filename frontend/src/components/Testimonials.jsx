@@ -53,7 +53,7 @@ const Testimonials = () => {
             {/* Oversized quote mark, decorative only */}
             <span
               aria-hidden="true"
-              className="prata-regular pointer-events-none absolute -top-6 right-4 text-8xl text-ink-100 select-none"
+              className="type-display pointer-events-none absolute -top-6 right-4 text-8xl text-ink-100 select-none"
             >
               &rdquo;
             </span>

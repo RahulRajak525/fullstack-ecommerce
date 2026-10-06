@@ -3,7 +3,13 @@ import { motion } from "motion/react";
 import { Link } from "react-router-dom";
 import { FiArrowRight, FiMapPin } from "react-icons/fi";
 import CountUp from "./ui/CountUp";
-import { assets } from "../assets/assets";
+import { BRAND } from "../brand";
+import { photoSrcSet, photoUrl } from "../utils/cloudinary";
+
+// Both from Pexels, free Pexels License: @arina-dmitrieva-66352626 (14440412)
+// and @cristian-rojas (8030176).
+const ROBE_PHOTO = "v1791267017/pexels-arina-dmitrieva-66352626-14440412.jpg";
+const RAIL_PHOTO = "v1791267021/pexels-cristian-rojas-8030176.jpg";
 
 const ease = [0.22, 1, 0.36, 1];
 
@@ -34,7 +40,7 @@ const AboutHero = () => {
             <span className="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-ink-50 px-3.5 py-1.5">
               <FiMapPin className="text-ink-500" />
               <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-600">
-                A studio of nine, in Washington
+                A studio of nine, in Jaipur
               </span>
             </span>
 
@@ -45,7 +51,7 @@ const AboutHero = () => {
             </span>
           </motion.div>
 
-          <h1 className="prata-regular mt-6 text-4xl leading-[1.12] text-ink-950 sm:text-5xl">
+          <h1 className="type-display mt-6 text-4xl leading-[1.12] text-ink-950 sm:text-5xl">
             {headline.map((line, i) => (
               <span key={line} className="block overflow-hidden pb-1">
                 <motion.span
@@ -102,7 +108,7 @@ const AboutHero = () => {
           >
             {stats.map(({ value, suffix, label }) => (
               <div key={label}>
-                <p className="prata-regular text-2xl text-ink-950">
+                <p className="type-display text-2xl text-ink-950">
                   <CountUp value={value} suffix={suffix} />
                 </p>
                 <p className="mt-1 text-[11px] uppercase tracking-wider text-ink-400">
@@ -113,21 +119,47 @@ const AboutHero = () => {
           </motion.div>
         </div>
 
-        {/* Two overlapping frames, the smaller one floating over the corner */}
+        {/* A madder-red robe beside raw woven cloth, with what the name means
+            set as a dictionary entry over its corner, and a second photo
+            pinned over the opposite one */}
         <motion.div
           initial={{ opacity: 0, scale: 1.04 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.9, ease }}
           className="relative"
         >
-          <div className="group aspect-4/5 overflow-hidden rounded-3xl bg-ink-100 shadow-soft">
+          <div className="group relative aspect-4/5 overflow-hidden rounded-3xl shadow-soft">
             <img
-              src={assets.about_img}
-              alt="Inside the Forever studio"
-              loading="lazy"
+              src={photoUrl(ROBE_PHOTO, 800)}
+              srcSet={photoSrcSet(ROBE_PHOTO, [480, 800, 1200])}
+              sizes="(min-width: 1024px) 40vw, 90vw"
+              alt="A madder-red robe with a woven border, hung beside a length of raw handwoven cloth"
+              width="800"
+              height="1000"
+              fetchPriority="high"
               decoding="async"
-              className="h-full w-full object-cover transition-transform duration-1200 ease-out group-hover:scale-105"
+              className="h-full w-full bg-ink-100 object-cover transition-transform duration-1200 ease-out group-hover:scale-105"
             />
+
+            <div className="absolute bottom-4 left-4 right-4 rounded-2xl bg-white/95 p-5 shadow-lift backdrop-blur sm:bottom-5 sm:left-auto sm:right-5 sm:w-68">
+              <p className="type-display text-3xl text-ink-950">
+                {BRAND.name.toLowerCase()}
+              </p>
+              <p className="mt-1.5 text-[11px] text-ink-400">
+                <span lang="hi">कोरा</span> &middot; /ko&#720;.ra&#720;/ &middot;{" "}
+                <em>adjective</em>
+              </p>
+              <ol className="mt-3 space-y-1.5 text-xs leading-relaxed text-ink-700">
+                <li className="flex gap-2.5">
+                  <span className="text-ink-400">1.</span>
+                  Of cloth: raw, unbleached, not yet dyed.
+                </li>
+                <li className="flex gap-2.5">
+                  <span className="text-ink-400">2.</span>
+                  Fresh, unused; a blank page before the first word.
+                </li>
+              </ol>
+            </div>
           </div>
 
           <motion.div
@@ -137,11 +169,15 @@ const AboutHero = () => {
             className="absolute -bottom-6 -left-6 hidden w-40 overflow-hidden rounded-2xl border-4 border-white bg-ink-100 shadow-lift sm:block"
           >
             <img
-              src={assets.support_img}
-              alt="Our support team at work"
+              src={photoUrl(RAIL_PHOTO, 320)}
+              srcSet={photoSrcSet(RAIL_PHOTO, [160, 320, 480])}
+              sizes="160px"
+              alt="A wooden rail of undyed, black and rust-red garments"
+              width="320"
+              height="400"
               loading="lazy"
               decoding="async"
-              className="aspect-square w-full object-cover"
+              className="aspect-4/5 w-full object-cover"
             />
           </motion.div>
 
@@ -152,7 +188,7 @@ const AboutHero = () => {
             className="absolute -right-3 top-6 animate-float rounded-2xl bg-white/95 px-4 py-3 shadow-lift backdrop-blur"
           >
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-400">
-              Est. 2014
+              Est. {BRAND.founded}
             </p>
             <p className="mt-1 text-xs font-semibold text-ink-900">
               Still the same studio

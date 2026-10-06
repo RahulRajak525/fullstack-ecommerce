@@ -1,18 +1,18 @@
 import React from "react";
 import { motion } from "motion/react";
-import { FiRefreshCw, FiShield, FiHeadphones, FiTruck } from "react-icons/fi";
+import { FiRefreshCw, FiTool, FiHeadphones, FiTruck } from "react-icons/fi";
 import { staggerChild, staggerParent } from "./ui/motionVariants";
 
 const policies = [
   {
     icon: FiRefreshCw,
-    title: "Easy exchange",
-    body: "Swap a size or colour within 7 days, no questions asked.",
+    title: "7-day returns",
+    body: "Wrong size or the wrong dye for you? Swap or refund within a week.",
   },
   {
-    icon: FiShield,
-    title: "7-day returns",
-    body: "Changed your mind? Send it back for a full refund.",
+    icon: FiTool,
+    title: "Repairs at cost",
+    body: "Seams, zips and buttons mended for as long as we trade.",
   },
   {
     icon: FiTruck,
@@ -21,8 +21,8 @@ const policies = [
   },
   {
     icon: FiHeadphones,
-    title: "Support 24/7",
-    body: "Real people, ready to help whenever you need them.",
+    title: "Replies in a day",
+    body: "One inbox, read by the people who cut the clothes.",
   },
 ];
 

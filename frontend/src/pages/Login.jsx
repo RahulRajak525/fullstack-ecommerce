@@ -107,7 +107,7 @@ function Login() {
         className="w-full max-w-md rounded-3xl border border-ink-200 bg-white p-8 shadow-soft sm:p-10"
       >
         <div className="text-center">
-          <h1 className="prata-regular text-3xl text-ink-950">
+          <h1 className="type-display text-3xl text-ink-950">
             {isSignUp ? "Create account" : "Welcome back"}
           </h1>
           <div className="mx-auto mt-3 h-px w-12 bg-ink-900" />

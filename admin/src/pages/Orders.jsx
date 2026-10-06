@@ -70,7 +70,7 @@ const Orders = ({ token }) => {
   return (
     <>
       <div className="mb-6">
-        <h1 className="prata-regular text-2xl text-ink-950">Orders</h1>
+        <h1 className="type-display text-2xl text-ink-950">Orders</h1>
         <p className="mt-1.5 text-sm text-ink-500">
           {loading
             ? "Loading orders..."

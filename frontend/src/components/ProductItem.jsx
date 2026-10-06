@@ -46,7 +46,7 @@ function ProductItem({ id, image, name, price, bestseller }) {
           )}
 
           {bestseller && (
-            <span className="absolute left-3 top-3 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-900 shadow-soft backdrop-blur">
+            <span className="absolute left-2 top-2 rounded-full bg-white/95 px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wide text-ink-900 shadow-soft backdrop-blur sm:left-2.5 sm:top-2.5 sm:text-[9px]">
               Bestseller
             </span>
           )}

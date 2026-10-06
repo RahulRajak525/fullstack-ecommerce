@@ -64,7 +64,7 @@ const List = ({ token }) => {
     <>
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="prata-regular text-2xl text-ink-950">All products</h1>
+          <h1 className="type-display text-2xl text-ink-950">All products</h1>
           <p className="mt-1.5 text-sm text-ink-500">
             {loading
               ? "Loading the catalogue..."

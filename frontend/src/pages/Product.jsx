@@ -165,7 +165,7 @@ function ProductView({ productData }) {
             </span>
           )}
 
-          <h1 className="prata-regular mt-3 text-3xl leading-tight text-ink-950 sm:text-4xl">
+          <h1 className="type-display mt-3 text-3xl leading-tight text-ink-950 sm:text-4xl">
             {productData.name}
           </h1>
 
