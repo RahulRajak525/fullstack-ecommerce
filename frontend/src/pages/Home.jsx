@@ -5,7 +5,6 @@ import CategoryStrip from "../components/CategoryStrip";
 import LatestCollection from "../components/LatestCollection";
 import PromoBanner from "../components/PromoBanner";
 import BestSeller from "../components/BestSeller";
-import DyeBath from "../components/DyeBath";
 import BrandStory from "../components/BrandStory";
 import Testimonials from "../components/Testimonials";
 import OurPolicy from "../components/OurPolicy";
@@ -29,7 +28,6 @@ function Home() {
         <LatestCollection />
         <PromoBanner />
         <BestSeller />
-        <DyeBath />
         <BrandStory />
         <Testimonials />
         <OurPolicy />
