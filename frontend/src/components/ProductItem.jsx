@@ -20,6 +20,7 @@ import {
 } from "motion/react";
 import { FiArrowUpRight, FiChevronsLeft, FiShoppingBag } from "react-icons/fi";
 import QuickAdd from "./QuickAdd";
+import WishlistButton from "./WishlistButton";
 import {
   claimSwipeHint,
   markSwipeHintShown,
@@ -241,14 +242,20 @@ function ProductItem({ id, image, name, price, bestseller }) {
           </div>
         </Link>
 
-        {/* Quick add: always shown on touch, on hover with a mouse. It sits
-            outside the link, since a button can't nest inside one. */}
+        {/* Favourite and quick add sit outside the link, since a button can't
+            nest inside one. The heart always shows; quick add always on
+            touch, on hover with a mouse. */}
+        <WishlistButton
+          id={id}
+          name={name}
+          className="absolute right-2 top-2 h-8 w-8 translate-z-8 bg-white/95 text-sm shadow-soft backdrop-blur sm:right-2.5 sm:top-2.5 sm:h-9 sm:w-9"
+        />
         <button
           type="button"
           onClick={() => setQuickAdd(true)}
           aria-label={`Quick add ${name}`}
           title="Quick add"
-          className={`absolute right-2 top-2 flex h-8 w-8 translate-z-8 items-center justify-center rounded-full bg-white/95 text-sm text-ink-900 shadow-soft backdrop-blur transition-all duration-300 hover:bg-ink-900 hover:text-white sm:right-2.5 sm:top-2.5 sm:h-9 sm:w-9 ${
+          className={`absolute right-2 top-11.5 flex h-8 w-8 translate-z-8 items-center justify-center rounded-full bg-white/95 text-sm text-ink-900 shadow-soft backdrop-blur transition-all duration-300 hover:bg-ink-900 hover:text-white sm:right-2.5 sm:top-13 sm:h-9 sm:w-9 ${
             hoverable
               ? "opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
               : ""

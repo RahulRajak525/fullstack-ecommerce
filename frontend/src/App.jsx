@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Collection from "./pages/Collection";
 import About from "./pages/About";
 import Cart from "./pages/Cart";
+import Favourites from "./pages/Favourites";
 import Contact from "./pages/Contact";
 import Product from "./pages/Product";
 import Login from "./pages/Login";
@@ -39,6 +40,7 @@ const routes = [
   { path: "/contact", element: <Contact /> },
   { path: "/product/:productId", element: <Product /> },
   { path: "/cart", element: <Cart /> },
+  { path: "/favourites", element: <Favourites /> },
   { path: "/login", element: <Login /> },
   { path: "/place-order", element: <PlaceOrder /> },
   { path: "/verify", element: <Verify /> },
