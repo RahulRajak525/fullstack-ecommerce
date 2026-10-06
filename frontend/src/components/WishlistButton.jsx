@@ -3,8 +3,17 @@ import { motion, useAnimate } from "motion/react";
 import { FiHeart } from "react-icons/fi";
 import { ShopContext } from "../context/ShopContext";
 
-/** Heart toggle that saves a product to, or removes it from, favourites. */
-export default function WishlistButton({ id, name, className = "" }) {
+/**
+ * Heart toggle that saves a product to, or removes it from, favourites.
+ * `onPhoto` draws the unsaved heart in white, for sitting bare on an image.
+ */
+export default function WishlistButton({
+  id,
+  name,
+  onPhoto = false,
+  className = "",
+  ...props
+}) {
   const { wishlist, toggleWishlist } = useContext(ShopContext);
   const saved = wishlist.includes(id);
   // The heart pops when the shopper toggles it, not when favourites load
@@ -23,6 +32,7 @@ export default function WishlistButton({ id, name, className = "" }) {
 
   return (
     <motion.button
+      {...props}
       type="button"
       whileTap={{ scale: 0.85 }}
       onClick={onClick}
@@ -30,7 +40,11 @@ export default function WishlistButton({ id, name, className = "" }) {
       aria-pressed={saved}
       title={saved ? "Saved to favourites" : "Save to favourites"}
       className={`flex items-center justify-center rounded-full transition-colors ${
-        saved ? "text-accent-500" : "text-ink-900 hover:text-accent-500"
+        saved
+          ? "text-accent-500"
+          : onPhoto
+            ? "text-white hover:text-accent-500"
+            : "text-ink-900 hover:text-accent-500"
       } ${className}`}
     >
       <span ref={scope} className="flex">

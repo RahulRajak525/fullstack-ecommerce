@@ -30,6 +30,11 @@ import {
 // Degrees of tilt at the card's edges
 const MAX_TILT_X = 12;
 const MAX_TILT_Y = 14;
+// The top-right corner, in px, where the card lies flat instead: the heart and
+// quick add sit there, and a tilting card slides them out from under the
+// pointer as it approaches.
+const FLAT_ZONE_WIDTH = 88;
+const FLAT_ZONE_HEIGHT = 120;
 const tiltSpring = { stiffness: 220, damping: 20, mass: 0.6 };
 
 // A sideways swipe (touch) or left-button drag (mouse) this far, in px,
@@ -129,8 +134,11 @@ function ProductItem({ id, image, name, price, bestseller }) {
     const rect = e.currentTarget.getBoundingClientRect();
     const px = (e.clientX - rect.left) / rect.width;
     const py = (e.clientY - rect.top) / rect.height;
-    rotateY.set((px - 0.5) * 2 * MAX_TILT_Y);
-    rotateX.set((0.5 - py) * 2 * MAX_TILT_X);
+    const inFlatZone =
+      e.clientX >= rect.right - FLAT_ZONE_WIDTH &&
+      e.clientY <= rect.top + FLAT_ZONE_HEIGHT;
+    rotateY.set(inFlatZone ? 0 : (px - 0.5) * 2 * MAX_TILT_Y);
+    rotateX.set(inFlatZone ? 0 : (0.5 - py) * 2 * MAX_TILT_X);
     e.currentTarget.style.setProperty("--gx", `${px * 100}%`);
     e.currentTarget.style.setProperty("--gy", `${py * 100}%`);
   };
@@ -245,17 +253,21 @@ function ProductItem({ id, image, name, price, bestseller }) {
         {/* Favourite and quick add sit outside the link, since a button can't
             nest inside one. The heart always shows; quick add always on
             touch, on hover with a mouse. */}
+        {/* Each button's ::before is an invisible pad around it, so a near
+            miss still lands. Quick add's pad doesn't reach up into the
+            heart's. */}
         <WishlistButton
           id={id}
           name={name}
-          className="absolute right-2 top-2 h-8 w-8 translate-z-8 bg-white/95 text-sm shadow-soft backdrop-blur sm:right-2.5 sm:top-2.5 sm:h-9 sm:w-9"
+          onPhoto
+          className="absolute right-2 top-2 h-8 w-8 translate-z-8 text-lg [filter:drop-shadow(0_0_1px_rgb(0_0_0/0.7))_drop-shadow(0_1px_3px_rgb(0_0_0/0.35))] before:absolute before:-inset-2 sm:right-2.5 sm:top-2.5 sm:h-9 sm:w-9 sm:text-xl"
         />
         <button
           type="button"
           onClick={() => setQuickAdd(true)}
           aria-label={`Quick add ${name}`}
           title="Quick add"
-          className={`absolute right-2 top-11.5 flex h-8 w-8 translate-z-8 items-center justify-center rounded-full bg-white/95 text-sm text-ink-900 shadow-soft backdrop-blur transition-all duration-300 hover:bg-ink-900 hover:text-white sm:right-2.5 sm:top-13 sm:h-9 sm:w-9 ${
+          className={`absolute right-2 top-11.5 flex before:absolute before:-inset-x-2 before:top-0 before:-bottom-2 h-8 w-8 translate-z-8 items-center justify-center rounded-full bg-white/95 text-sm text-ink-900 shadow-soft backdrop-blur transition-all duration-300 hover:bg-ink-900 hover:text-white sm:right-2.5 sm:top-13 sm:h-9 sm:w-9 ${
             hoverable
               ? "opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
               : ""
