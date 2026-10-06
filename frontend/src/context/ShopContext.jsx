@@ -31,7 +31,7 @@ const ShopContextProvider = (props) => {
     async (itemId, size) => {
     if (!size) {
       toast.error("Please select a size first");
-      return;
+      return false;
     }
 
     setAddingToCart(itemId);
@@ -54,12 +54,13 @@ const ShopContextProvider = (props) => {
         setCartItems(cartItems); // roll back to the pre-click cart
         toast.error(error.response?.data?.message || error.message);
         setAddingToCart(null);
-        return;
+        return false;
       }
     }
 
       // No success toast - the cart badge already confirms the add.
       setAddingToCart(null);
+      return true;
     },
     [cartItems, token, backendUrl],
   );
