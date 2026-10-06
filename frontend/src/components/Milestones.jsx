@@ -80,7 +80,7 @@ const Milestones = () => {
               <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-400">
                 {year}
               </p>
-              <h3 className="prata-regular mt-2 text-xl text-ink-950">
+              <h3 className="type-display mt-2 text-xl text-ink-950">
                 {title}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-ink-500">{body}</p>

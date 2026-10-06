@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Prata&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Manrope:wght@300..800&display=swap");
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------
@@ -32,8 +32,8 @@
   --color-success-500: #10b981;
   --color-success-700: #047857;
 
-  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Prata", ui-serif, Georgia, serif;
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
 
   --shadow-soft: 0 1px 2px rgb(16 15 20 / 0.04), 0 8px 24px rgb(16 15 20 / 0.06);
   --shadow-lift: 0 2px 4px rgb(16 15 20 / 0.05), 0 18px 40px rgb(16 15 20 / 0.12);
@@ -87,11 +87,11 @@
    Base
 ----------------------------------------------------------------*/
 @layer base {
-  * {
-    font-family: var(--font-sans);
-  }
-
+  /* Set once on the root and inherited, rather than on `*`: a universal
+     rule beats inheritance, so the spans inside a display heading would
+     fall back to the sans face. */
   html {
+    font-family: var(--font-sans);
     -webkit-text-size-adjust: 100%;
   }
 
@@ -133,7 +133,7 @@
 /* ---------------------------------------------------------------
    Utilities
 ----------------------------------------------------------------*/
-@utility prata-regular {
+@utility type-display {
   font-family: var(--font-display);
   font-weight: 400;
   font-style: normal;

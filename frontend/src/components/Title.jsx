@@ -14,7 +14,7 @@ function Title({ text1, text2, subtitle, center = false }) {
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className={center ? "text-center" : ""}
     >
-      <h2 className="prata-regular text-2xl text-ink-950 sm:text-3xl">
+      <h2 className="type-display text-2xl text-ink-950 sm:text-3xl">
         <span className="text-ink-400">{text1}</span>
         <span>{text2}</span>
       </h2>

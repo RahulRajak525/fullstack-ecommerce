@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { FiInstagram, FiTwitter, FiFacebook, FiMail } from "react-icons/fi";
-import { assets } from "../assets/assets";
+import Logo from "./ui/Logo";
+import { BRAND } from "../brand";
 
 const company = [
   { label: "Home", to: "/" },
@@ -22,10 +23,9 @@ const Footer = () => {
       <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[2.2fr_1fr_1.3fr]">
         {/* Brand */}
         <div>
-          <img src={assets.logo} className="w-32" alt="Forever" />
+          <Logo />
           <p className="mt-5 max-w-sm text-sm leading-relaxed text-ink-500">
-            Considered wardrobe staples in durable fabrics. Designed to be worn
-            season after season, not thrown away after one.
+            {BRAND.description}
           </p>
           <div className="mt-6 flex gap-2">
             {socials.map(({ Icon, label }) => (
@@ -66,15 +66,15 @@ const Footer = () => {
             Get in touch
           </p>
           <ul className="mt-5 flex flex-col gap-3 text-sm text-ink-600">
-            <li>+1-000-000-0000</li>
+            <li>{BRAND.phone}</li>
             <li className="flex items-center gap-2">
               <FiMail className="text-ink-400" />
-              hello@forever.com
+              {BRAND.email}
             </li>
             <li className="text-ink-500">
-              54709 Willms Station, Suite 350
+              {BRAND.address[0]}
               <br />
-              Washington, USA
+              {BRAND.address[1]}
             </li>
           </ul>
         </div>
@@ -83,7 +83,7 @@ const Footer = () => {
       <div className="mt-14 rounded-2xl border border-ink-200 bg-ink-100/60 px-5 py-4">
         <p className="text-xs leading-relaxed text-ink-500">
           <span className="font-semibold text-ink-700">Portfolio demo.</span>{" "}
-          Forever is a full-stack project built to demonstrate the storefront,
+          {BRAND.name} is a full-stack project built to demonstrate the storefront,
           admin panel and API. Products, prices, reviews, company details and
           figures throughout the site are sample content, and no order placed
           here is fulfilled.
@@ -92,7 +92,7 @@ const Footer = () => {
 
       <div className="mt-6 flex flex-col items-center justify-between gap-3 border-t border-ink-200 py-7 sm:flex-row">
         <p className="text-xs text-ink-400">
-          &copy; {new Date().getFullYear()} Forever &mdash; demo storefront.
+          &copy; {new Date().getFullYear()} {BRAND.name} &mdash; demo storefront.
         </p>
         <div className="flex gap-6 text-xs text-ink-400">
           <a href="#" className="transition-colors hover:text-ink-900">

@@ -44,7 +44,7 @@ function NotFound() {
               initial={{ opacity: 0, y: 28, rotate: i === 1 ? -8 : 0 }}
               animate={{ opacity: 1, y: 0, rotate: 0 }}
               transition={{ duration: 0.7, delay: 0.1 + i * 0.1, ease }}
-              className="prata-regular text-6xl leading-none text-ink-950 sm:text-8xl"
+              className="type-display text-6xl leading-none text-ink-950 sm:text-8xl"
             >
               {digit}
             </motion.span>
@@ -53,7 +53,7 @@ function NotFound() {
 
         <motion.h1
           variants={staggerChild}
-          className="prata-regular mt-8 text-2xl text-ink-950 sm:text-3xl"
+          className="type-display mt-8 text-2xl text-ink-950 sm:text-3xl"
         >
           This page has sold out.
         </motion.h1>

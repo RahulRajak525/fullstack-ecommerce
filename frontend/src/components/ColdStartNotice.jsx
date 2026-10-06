@@ -3,7 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { FiX } from "react-icons/fi";
 import { ShopContext } from "../context/ShopContext";
 
-const STORAGE_KEY = "forever:cold-start-seen";
+const STORAGE_KEY = "kora:cold-start-seen";
 // Long enough that a warm backend never triggers the notice - it only appears
 // once the wait is real.
 const SHOW_AFTER_MS = 2200;

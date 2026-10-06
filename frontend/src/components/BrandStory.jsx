@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import { FiArrowRight, FiCheck } from "react-icons/fi";
 import CountUp from "./ui/CountUp";
 import { staggerChild, staggerParent } from "./ui/motionVariants";
-import { assets } from "../assets/assets";
+import { Weave } from "./ui/Swatch";
+import { BRAND, DYES } from "../brand";
 
 const promises = [
   "Natural fibres, mill-certified and pre-shrunk",
@@ -12,6 +13,9 @@ const promises = [
   "Reinforced seams that survive the wash cycle",
   "Honest pricing, no invented discounts",
 ];
+
+// Strips of each dye, stacked like test pieces pinned up in a dye yard
+const strips = [DYES.indigo, DYES.madder, DYES.kattha, DYES.turmeric, DYES.anar];
 
 const stats = [
   { value: 12, suffix: "yrs", label: "Making clothes" },
@@ -21,7 +25,7 @@ const stats = [
 
 const BrandStory = () => {
   const ref = useRef(null);
-  // Image drifts slightly slower than the page as the section passes through.
+  // The strips drift slightly slower than the page as the section passes through.
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
@@ -41,14 +45,27 @@ const BrandStory = () => {
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         className="relative aspect-4/3 overflow-hidden rounded-3xl bg-ink-100 shadow-soft lg:aspect-square"
       >
-        <motion.img
-          src={assets.about_img}
-          alt="Inside our studio"
-          loading="lazy"
-          decoding="async"
+        <motion.div
+          aria-hidden="true"
           style={{ y, scale }}
-          className="h-full w-full object-cover"
-        />
+          className="flex h-full w-full flex-col"
+        >
+          {strips.map((dye) => (
+            <Weave
+              key={dye.name}
+              dye={dye}
+              className="flex flex-1 items-center justify-end px-5"
+            >
+              <span
+                className={`text-[10px] font-semibold uppercase tracking-[0.18em] ${
+                  dye.light ? "text-ink-900/60" : "text-white/60"
+                }`}
+              >
+                {dye.name}
+              </span>
+            </Weave>
+          ))}
+        </motion.div>
 
         {/* Floating card, lifted off the photo */}
         <motion.div
@@ -59,7 +76,7 @@ const BrandStory = () => {
           className="absolute bottom-5 left-5 right-5 animate-float rounded-2xl bg-white/95 p-5 shadow-lift backdrop-blur sm:right-auto sm:max-w-65"
         >
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-400">
-            Since 2014
+            Since {BRAND.founded}
           </p>
           <p className="mt-2 text-sm leading-relaxed text-ink-700">
             One studio, one standard &mdash; every piece is approved by hand
@@ -83,7 +100,7 @@ const BrandStory = () => {
 
         <motion.h2
           variants={staggerChild}
-          className="prata-regular mt-5 text-3xl leading-tight text-ink-950 sm:text-4xl"
+          className="type-display mt-5 text-3xl leading-tight text-ink-950 sm:text-4xl"
         >
           Fewer clothes,
           <br />
@@ -116,7 +133,7 @@ const BrandStory = () => {
         >
           {stats.map(({ value, suffix, label }) => (
             <div key={label}>
-              <p className="prata-regular text-2xl text-ink-950 sm:text-3xl">
+              <p className="type-display text-2xl text-ink-950 sm:text-3xl">
                 <CountUp value={value} suffix={suffix} />
               </p>
               <p className="mt-1 text-[11px] uppercase tracking-wider text-ink-400">

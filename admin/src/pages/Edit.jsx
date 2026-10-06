@@ -103,7 +103,7 @@ function Edit({ token }) {
           <FiArrowLeft /> Back to products
         </Link>
 
-        <h1 className="prata-regular mt-3 text-2xl text-ink-950">
+        <h1 className="type-display mt-3 text-2xl text-ink-950">
           Edit product
         </h1>
         <p className="mt-1.5 text-sm text-ink-500">

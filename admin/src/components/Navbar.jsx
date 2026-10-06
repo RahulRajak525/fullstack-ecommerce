@@ -1,6 +1,6 @@
 import React from "react";
 import { FiLogOut } from "react-icons/fi";
-import { assets } from "../assets/assets";
+import Logo from "./ui/Logo";
 
 const Navbar = ({ setToken }) => {
   // Clearing state is enough - App writes the token back to localStorage and
@@ -12,7 +12,7 @@ const Navbar = ({ setToken }) => {
     <header className="sticky top-0 z-40 border-b border-ink-200 bg-white/85 backdrop-blur">
       <div className="flex items-center justify-between px-4 py-3 sm:px-6">
         <div className="flex items-center gap-3">
-          <img className="h-8 w-auto" src={assets.logo} alt="Forever" />
+          <Logo />
           <span className="hidden rounded-full border border-ink-200 bg-ink-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-500 sm:block">
             Admin
           </span>

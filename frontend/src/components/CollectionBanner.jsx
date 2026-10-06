@@ -39,7 +39,7 @@ const CollectionBanner = ({ total = 0, loading = false }) => {
             </span>
           </motion.div>
 
-          <h1 className="prata-regular mt-5 text-4xl leading-[1.12] text-ink-950 sm:text-5xl">
+          <h1 className="type-display mt-5 text-4xl leading-[1.12] text-ink-950 sm:text-5xl">
             <span className="block overflow-hidden pb-1">
               <motion.span
                 initial={{ y: "110%" }}

@@ -37,12 +37,12 @@ const NewsLetterBox = () => {
           <FiMail /> Newsletter
         </span>
 
-        <h2 className="prata-regular mt-5 text-2xl leading-snug text-white sm:text-4xl">
-          Subscribe and get 20% off
+        <h2 className="type-display mt-5 text-2xl leading-snug text-white sm:text-4xl">
+          Notes from the dye yard
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-white/60">
-          Early access to drops, restocks and members-only pricing. One email a
-          week, never more.
+          A short letter when a new dye lot comes out of the vats, with first
+          pick of the run. Once a month, never more.
         </p>
 
         <form

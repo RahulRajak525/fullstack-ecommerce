@@ -59,7 +59,7 @@ function Verify() {
         <motion.h1
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="prata-regular text-2xl text-ink-950"
+          className="type-display text-2xl text-ink-950"
         >
           Confirming your payment
         </motion.h1>
