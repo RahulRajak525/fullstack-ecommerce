@@ -208,31 +208,35 @@ const ProjectNotice = () => {
               </button>
             </div>
 
-            <ChatAnimation reduced={reduced} />
+            {/* On phones the card keeps only its name and the link: at full
+                size it covered a third of the screen */}
+            <div className="hidden sm:block">
+              <ChatAnimation reduced={reduced} />
 
-            <p className="mt-3 text-xs leading-relaxed text-ink-500">
-              A full-stack real-time messaging app with a web version and an
-              Android app built with React Native. It uses Socket.IO for
-              instant delivery, typing indicators and online status, plus
-              secure sign-in and per-user message deletion.
-            </p>
+              <p className="mt-3 text-xs leading-relaxed text-ink-500">
+                A full-stack real-time messaging app with a web version and an
+                Android app built with React Native. It uses Socket.IO for
+                instant delivery, typing indicators and online status, plus
+                secure sign-in and per-user message deletion.
+              </p>
 
-            <ul className="mt-3 flex flex-wrap gap-1.5">
-              {STACK.map((item) => (
-                <li
-                  key={item}
-                  className="rounded-full border border-ink-200 px-2 py-0.5 text-[10px] font-medium text-ink-500"
-                >
-                  {item}
-                </li>
-              ))}
-            </ul>
+              <ul className="mt-3 flex flex-wrap gap-1.5">
+                {STACK.map((item) => (
+                  <li
+                    key={item}
+                    className="rounded-full border border-ink-200 px-2 py-0.5 text-[10px] font-medium text-ink-500"
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
 
             <a
               href={WHISPER_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="group mt-4 flex items-center justify-center gap-2 rounded-full bg-ink-900 px-5 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-ink-700"
+              className="group mt-3 flex items-center justify-center gap-2 rounded-full bg-ink-900 sm:mt-4 px-5 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-ink-700"
             >
               Try the live demo
               <FiArrowUpRight className="text-sm transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

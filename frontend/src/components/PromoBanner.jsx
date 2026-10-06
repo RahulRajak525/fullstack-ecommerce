@@ -90,10 +90,10 @@ const PromoBanner = () => {
                 key={label}
                 className="w-18 rounded-2xl border border-white/10 bg-white/5 px-3 py-3 backdrop-blur"
               >
-                {/* Keyed so each tick re-mounts and replays the pop */}
+                {/* Keyed so each change re-mounts and replays the tick */}
                 <p
                   key={value}
-                  className="animate-pop text-2xl font-semibold tabular-nums text-white"
+                  className="animate-tick text-2xl font-semibold tabular-nums text-white"
                 >
                   {value}
                 </p>

@@ -27,7 +27,7 @@ const reviews = [
 
 const Testimonials = () => {
   return (
-    <section className="py-16 sm:py-20">
+    <section>
       <Title
         center
         text1={"What Customers "}
@@ -53,7 +53,7 @@ const Testimonials = () => {
             {/* Oversized quote mark, decorative only */}
             <span
               aria-hidden="true"
-              className="type-display pointer-events-none absolute -top-6 right-4 text-8xl text-ink-100 select-none"
+              className="type-display pointer-events-none absolute right-5 top-4 text-8xl leading-none text-ink-100 select-none"
             >
               &rdquo;
             </span>

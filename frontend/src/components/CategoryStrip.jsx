@@ -43,7 +43,7 @@ const categories = [
  */
 const CategoryStrip = () => {
   return (
-    <section className="py-16 sm:py-20">
+    <section>
       <Title
         center
         text1={"Shop by "}
@@ -56,10 +56,17 @@ const CategoryStrip = () => {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.2 }}
-        className="mt-10 grid gap-5 sm:grid-cols-3"
+        // Phones: a swipeable row that bleeds to the screen edge, with the
+        // next card peeking in. Stacked, the three tall cards were ~1400px of
+        // scrolling. From sm up it is the usual three-column grid.
+        className="no-scrollbar -mx-4 mt-10 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-5 sm:overflow-visible sm:px-0 sm:pb-0"
       >
         {categories.map(({ name, caption, dye, photo }) => (
-          <motion.div key={name} variants={staggerChild}>
+          <motion.div
+            key={name}
+            variants={staggerChild}
+            className="w-[78%] shrink-0 snap-start sm:w-auto"
+          >
             <Link
               to={`/collection?category=${name}`}
               className="group relative block aspect-4/5 overflow-hidden rounded-3xl bg-ink-100 shadow-soft transition-shadow duration-500 hover:shadow-lift"
@@ -68,7 +75,7 @@ const CategoryStrip = () => {
                 <img
                   src={photoUrl(photo, 800)}
                   srcSet={photoSrcSet(photo, [480, 800, 1200])}
-                  sizes="(min-width: 640px) 33vw, 100vw"
+                  sizes="(min-width: 640px) 33vw, 78vw"
                   // The link already reads as the category name
                   alt=""
                   loading="lazy"

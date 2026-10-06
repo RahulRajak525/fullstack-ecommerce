@@ -31,12 +31,11 @@ const BrandStory = () => {
     offset: ["start end", "end start"],
   });
   const y = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [1.08, 1, 1.08]);
 
   return (
     <section
       ref={ref}
-      className="grid items-center gap-10 py-16 sm:py-20 lg:grid-cols-2 lg:gap-16"
+      className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16"
     >
       <motion.div
         initial={{ opacity: 0, x: -24 }}
@@ -45,16 +44,20 @@ const BrandStory = () => {
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         className="relative aspect-4/3 overflow-hidden rounded-3xl bg-ink-100 shadow-soft lg:aspect-square"
       >
+        {/* Taller than the frame, so the drift never exposes an edge. No
+            scale: it pushed the right-aligned labels into the frame edge. */}
         <motion.div
           aria-hidden="true"
-          style={{ y, scale }}
-          className="flex h-full w-full flex-col"
+          style={{ y }}
+          className="absolute inset-x-0 -inset-y-[8%] flex flex-col"
         >
           {strips.map((dye) => (
             <Weave
               key={dye.name}
               dye={dye}
-              className="flex flex-1 items-center justify-end px-5"
+              // Labels sit at the foot of each strip, which stays in frame
+              // even when the top strip is partly drifted out of view
+              className="flex flex-1 items-end justify-end px-6 pb-2.5"
             >
               <span
                 className={`text-[10px] font-semibold uppercase tracking-[0.18em] ${

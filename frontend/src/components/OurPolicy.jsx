@@ -33,7 +33,7 @@ const OurPolicy = () => {
       initial="hidden"
       whileInView="show"
       viewport={{ once: true, amount: 0.2 }}
-      className="grid grid-cols-1 gap-4 py-16 sm:grid-cols-2 lg:grid-cols-4"
+      className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
     >
       {policies.map(({ icon: Icon, title, body }) => (
         <motion.div
