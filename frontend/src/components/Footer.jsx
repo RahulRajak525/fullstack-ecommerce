@@ -94,17 +94,6 @@ const Footer = () => {
         <p className="text-xs text-ink-400">
           &copy; {new Date().getFullYear()} {BRAND.name} &mdash; demo storefront.
         </p>
-        <p className="flex items-center gap-2 text-xs text-ink-400">
-          Designed and developed by
-          <span className="font-semibold text-ink-700">WebAutix</span>
-          <img
-            src="/webautix-logo.png"
-            alt="WebAutix logo"
-            width="256"
-            height="117"
-            className="h-5 w-auto"
-          />
-        </p>
         <div className="flex gap-6 text-xs text-ink-400">
           <a href="#" className="transition-colors hover:text-ink-900">
             Privacy policy
